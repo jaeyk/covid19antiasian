@@ -2,7 +2,7 @@
 Investigation the relationship between COVID-19 and the Anti-Asian Climate
 
 ## Workflow
-1. Downalod and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all unzipped files except the English Twitter data (2.3 GB)
+1. Downalod and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all extracted files except the English Twitter data (2.3 GB)
 
 ```bash
 # Download the file in the raw_data subdirectory of the project directory
