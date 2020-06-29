@@ -2,7 +2,9 @@
 Investigation the relationship between COVID-19 and the Anti-Asian Climate
 
 ## Workflow
-1. Downalod and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all extracted files except the English Twitter data (2.3 GB). I took all of these steps in the command-line interface to increase efficiency, transparency and reproducibility. The tsv file (`clean_language_en.tsv`) contains 59,650,755 observations.
+1. Downalod and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all extracted files except the English Twitter data (2.3 GB).
+
+- I took all of these steps in the command-line interface to increase efficiency, transparency and reproducibility. The tsv file (`clean_language_en.tsv`) contains 59,650,755 observations.
 
 ```bash
 # Download the file in the raw_data subdirectory of the project directory
@@ -31,9 +33,10 @@ $ wc -l clean_language_en.tsv
 ```
 
 2. Hydrate the Tweet IDs
-The publicly available Twitter data only contains Tweet IDs to comply with Twitter's [Terms of Service](https://developer.twitter.com/en/developer-terms/agreement-and-policy). I turned these Tweet IDs back into JSON data (Tweets) using [Twarc](https://github.com/DocNow/twarc). If you were using Twarc for the first time, refer to [this tutorial](https://github.com/alblaine/twarc-tutorial).
 
-  - I first randomly selected 10 Tweet IDs from the dataset and then save it in a new file named `test.tsv`.
+- The publicly available Twitter data only contains Tweet IDs to comply with Twitter's [Terms of Service](https://developer.twitter.com/en/developer-terms/agreement-and-policy). I turned these Tweet IDs back into JSON data (Tweets) using [Twarc](https://github.com/DocNow/twarc). If you were using Twarc for the first time, refer to [this tutorial](https://github.com/alblaine/twarc-tutorial).
+
+- I first randomly selected 10 Tweet IDs from the dataset and then save it in a new file named `test.tsv`.
 
 ```bash
 $ shuf -n 10 clean_language_en.tsv > test.tsv
