@@ -42,6 +42,21 @@ $ wc -l clean_language_en.tsv
 $ shuf -n 10 clean_language_en.tsv > test.tsv
 ```
 
+- `test.tsv` has three columns: `Tweeter IDs`, `date`, and `time` I need only the first column for hydration. I select
+
+```bash
+$ cut -f1 test.tsv > test1.tsv
+```
+
+- Now, hydrate.
+
+```bash
+# Hydrate
+$ twarc hydrate test1.tsv > test.jsonl
+# Check
+$ head -n5 test.jsonl 
+```
+
 3. Subset Asians
 4. Classify hate speech
 5. Classify race
