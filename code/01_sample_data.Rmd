@@ -43,7 +43,7 @@ cle$month <- cle$V2 %>%
 
 sampled <- cle %>%
   group_by(month) %>%
-  slice_sample(n = 20000, 
+  slice_sample(n = 200000, 
                replace = FALSE)
 
 ```
