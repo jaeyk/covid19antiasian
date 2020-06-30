@@ -36,25 +36,16 @@ $ wc -l clean_language_en.tsv
 
 - The publicly available Twitter data only contains Tweet IDs to comply with Twitter's [Terms of Service](https://developer.twitter.com/en/developer-terms/agreement-and-policy). I turned these Tweet IDs back into JSON data (Tweets) using [Twarc](https://github.com/DocNow/twarc). If you were using Twarc for the first time, refer to [this tutorial](https://github.com/alblaine/twarc-tutorial).
 
-- I first randomly selected 10 Tweet IDs from the dataset and then save it in a new file named `test.tsv`.
+- To ease hydration, I first randomly selected 120,000 Tweet IDs from the dataset starifying on the months in which these tweets were created. I then saved the sampled data in a new file named `sampled.tsv`. The tsv file has four columns: `Tweet IDs`, `date`, `time`, and `month`. Since we only need the first column, I selected it and saved it as a separate file named `sampled1.tsv`. I took this step in R as `fread` package is fast even for importing and wrangling a 2.3 GB tsv file.
 
-```bash
-$ shuf -n 10 clean_language_en.tsv > test.tsv
-```
-
-- `test.tsv` has three columns: `Tweeter IDs`, `date`, and `time` I need only the first column for hydration. I select
-
-```bash
-$ cut -f1 test.tsv > test1.tsv
-```
-
-- Now, hydrate.
+- Now, hydrate in the terminal using `twarc`.
 
 ```bash
 # Hydrate
-$ twarc hydrate test1.tsv > test.jsonl
-# Check
-$ head -n5 test.jsonl 
+$ twarc hydrate sampled1.tsv > sampled.jsonl
+
+# Check the number of tweets. The return value * 100 should be 120,000.
+$ grep -o 'hydrating 100 ids' twarc.log | wc -l
 ```
 
 3. Subset Asians
