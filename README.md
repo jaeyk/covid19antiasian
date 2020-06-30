@@ -36,7 +36,7 @@ $ wc -l clean_language_en.tsv
 
 - The publicly available Twitter data only contains Tweet IDs to comply with Twitter's [Terms of Service](https://developer.twitter.com/en/developer-terms/agreement-and-policy). I turned these Tweet IDs back into JSON data (Tweets) using [Twarc](https://github.com/DocNow/twarc). If you were using Twarc for the first time, refer to [this tutorial](https://github.com/alblaine/twarc-tutorial).
 
-- To ease hydration, I first randomly selected 120,000 Tweet IDs from the dataset starifying on the months in which these tweets were created. I then saved the sampled data in a new file named `sampled.tsv`. The tsv file has four columns: `Tweet IDs`, `date`, `time`, and `month`. Since we only need the first column, I selected it and saved it as a separate file named `sampled1.tsv`. I took this step in R as `fread` package is fast even for importing and wrangling a 2.3 GB tsv file.
+- To ease hydration, I first randomly selected 120,000 Tweet IDs from the dataset starifying on the months in which these tweets were created. I then saved the sampled data in a new file named `sampled.tsv`. The TSV file has four columns: `Tweet IDs`, `date`, `time`, and `month`. Since we only need the first column, I selected it and saved it as a separate file named `sampled1.tsv`. I took this step in R as `fread` package is fast even for importing and wrangling a 2.3 GB TSV file.
 
 - Now, hydrate in the terminal using `twarc`.
 
@@ -44,10 +44,20 @@ $ wc -l clean_language_en.tsv
 # Hydrate
 $ twarc hydrate sampled1.tsv > sampled.jsonl
 
-# Check the number of tweets. The return value * 100 should be 120,000.
-$ grep -o 'hydrating 100 ids' twarc.log | wc -l
+# Check the number of tweets.
+$ grep -o 'INFO archived' twarc.log | wc -l
 ```
 
+The next step is turn the JSON file into a CSV file using [json2csv](https://gwu-libraries.github.io/sfm-ui/posts/2018-03-20-twitter-command-line).
+
+```bash
+# Install json2csv
+git clone https://github.com/DocNow/twarc.git
+pip install -e twarc
+
+# Turn JSON into CSV
+
+```
 3. Subset Asians
 4. Classify hate speech
 5. Classify race
