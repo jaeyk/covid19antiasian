@@ -55,10 +55,10 @@ sampled <- cle %>%
 # dir.create("../processed_data")
 
 # Full data 
-fwrite(sampled, here("processed_data", "sampled.tsv"))
+fwrite(sampled[-1,], here("processed_data", "sampled.tsv"))
 
 # Only Tweet IDs
-fwrite(sampled[,1], here("processed_data", "sampled1.tsv"))
+fwrite(sampled[-1,1], here("processed_data", "sampled1.tsv"))
 
 ```
 
