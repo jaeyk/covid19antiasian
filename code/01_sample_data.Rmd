@@ -1,0 +1,66 @@
+---
+title: "01_sample_data"
+author: "Jae Yeon Kim"
+date: "6/29/2020"
+output: html_document
+---
+
+# Import libs and files 
+
+## Libs
+
+```{r}
+
+pacman::p_load(data.table, # for fast data import 
+               tidyverse, # for tidyverse 
+               here) # for reproducibility 
+
+```
+
+## Files 
+
+```{r}
+
+cle <- data.table::fread(here("raw_data", "clean_language_en.tsv"))
+
+```
+
+# Sample Tweet IDs
+
+## Create a stratifying variable 
+
+```{r}
+
+cle$month <- cle$V2 %>%
+    str_replace_all("-", "") %>% 
+    str_replace_all(".{2}$", "")
+
+```
+
+## Sample 
+
+```{r}
+
+sampled <- cle %>%
+  group_by(month) %>%
+  slice_sample(n = 20000, 
+               replace = FALSE)
+
+```
+
+# Export 
+
+```{r}
+
+# dir.create("../processed_data")
+
+# Full data 
+fwrite(sampled, here("processed_data", "sampled.tsv"))
+
+# Only Tweet IDs
+fwrite(sampled[,1], here("processed_data", "sampled1.tsv"))
+
+```
+
+
+
