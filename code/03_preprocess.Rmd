@@ -1,0 +1,71 @@
+---
+title: "03_preprocess_data"
+author: "Jae Yeon Kim"
+date: "7/2/2020"
+output: html_document
+---
+
+# Import packages and files 
+
+## Packages
+
+```{r}
+
+pacman::p_load(tidyverse, # tidyverse 
+               here, # reproducibility 
+               dbplyr, # to use database with dplyr 
+               RSQLite) # for SQLite
+
+```
+
+## Files 
+
+```{r}
+
+parsed <- readRDS(file.choose())
+
+```
+
+## Wrangle 
+
+### Select and Filter 
+
+```{r}
+
+selected <- parsed %>% 
+    select(country_code, created_at, full_text) %>%
+    filter(!is.na(country_code))
+
+```
+
+### Mutate 
+
+```{r}
+
+# Lower case 
+selected$full_text <- str_to_lower(selected$full_text)
+
+# Create new columns 
+selected <- selected %>%
+    mutate(full_text = str_to_lower(full_text),
+           wuhan = as.numeric(str_detect(full_text, "wuhan")),
+           asian = as.numeric(str_detect(full_text, "asia|asian")),
+           chinese = as.numeric(str_detect(full_text, "china|chinese")),
+           US = ifelse(country_code == "US", 1, 0)
+    )
+
+# Remove except selected
+rm(list = setdiff(ls(), "selected"))
+
+```
+
+## Explore 
+
+
+```{r}
+selected %>% 
+    group_by(US) %>%
+    count()
+```
+
+

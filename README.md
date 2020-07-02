@@ -12,9 +12,9 @@ Investigation the relationship between COVID-19 and the Anti-Asian Climate
 $ curl -O https://zenodo.org/record/3902855/files/clean_languages.tar.gz?download=1
 
 # Check the downloaded file, including information on its size
-$ ls -lh
+# $ ls -lh
 
-# Unpakcg the .tar.gz file
+# Unpack the .tar.gz file
 $ tar -xzf 'clean_languages.tar.gz?download=1'
 
 # The above command will create combined_languages subdirectory.
@@ -24,7 +24,7 @@ $ tar -xzf 'clean_languages.tar.gz?download=1'
 $ cd combined_languages | mv clean_language_en.tsv ../ | rm-r combined_languages/
 
 # Inspect the English Twitter data
-$ head clean_language_en.tsv
+# $ head clean_language_en.tsv
 
 # Count the number of rows in the tsv file: 59,650,755
 $ wc -l clean_language_en.tsv
@@ -32,11 +32,20 @@ $ wc -l clean_language_en.tsv
 # 59,650,755
 ```
 
+```bash
+
+```
+
+```bash
+chmod 755 setup.sh
+
+./test
+```
 2. Hydrate the Tweet IDs
 
 - The publicly available Twitter data only contains Tweet IDs to comply with Twitter's [Terms of Service](https://developer.twitter.com/en/developer-terms/agreement-and-policy). I turned these Tweet IDs back into a JSON file (Tweets) using [Twarc](https://github.com/DocNow/twarc). If you were using Twarc for the first time, refer to [this tutorial](https://github.com/alblaine/twarc-tutorial).
 
-- To ease hydration, I first randomly selected 1,200,000 Tweet IDs (2%) from the dataset starifying on the months in which these tweets were created. I then saved the sampled data in a new file named `sampled.tsv`. The tsv file has four columns: `Tweet IDs`, `date`, `time`, and `month`. Since we only need the first column, I selected it and saved it as a separate file named `sampled1.tsv`. I took this step in R as `fread` package is fast even for importing and wrangling a 2.3 GB tsv file.
+- To ease hydration, I first randomly selected 5,719,216 Tweet IDs (10%) from the dataset starifying on the months in which these tweets were created. I then saved the sampled data in a new file named `sampled.tsv`. The tsv file has four columns: `Tweet IDs`, `date`, `time`, and `month`. Since we only need the first column, I selected it and saved it as a separate file named `sampled1.tsv`. I took this step in R as the `fread()` function from `data.table` package is fast enough even for importing and wrangling a 2.3 GB tsv file.
 
 - Now, hydrate in the terminal using `twarc`.
 
@@ -44,12 +53,41 @@ $ wc -l clean_language_en.tsv
 # Hydrate
 $ twarc hydrate sampled1.tsv > sampled.jsonl
 
-# Check the number of tweets = 1057453 (88%; Note some tweets were deleted.)
-$ grep -o 'INFO archived' twarc.log | wc -l
 ```
 
-The next step is turn the JSON file into a csv file. The JSON file is 4.2GB and it is difficult to parse it in an R session because of the memory constraint.
+- The next step is turn the JSON file into a csv file. `tidyjson` is a great tool to turn a messy JSON file, ingested from the Twitter APID, into a tidyverse-ready dataframe. I wrote an R function (`twitter_json2csv.R`). The problem is the JSON file is too huge to be parsed into a R session. (Your session will be killed automatically.) To get around this problem, I split the JSON file into smaller chunks and applied the parser.
 
+```bash
+# Create a subdirectory and move the file there
+$ mkdir splitted_data
+$ mv splitted.jsonl splitted_data/
+
+# Divide the json file by 1000 lines (Tweets)
+$ split -1000 sampled.jsonl --verbose
+```
+
+The above command created a series of smaller files all named like this "xab", "xac", "xad", etc. This pattern can be summarized as `[^x]` in the regular expression.
+
+- I created an R package
+
+- I modified the function
+
+- I saved it in an R script and run it in a terminal.
+
+```bash
+$ Rscript 02_parse_data.R
+```
+
+`nrow(parsed.rds)` = 5,050,042
+
+```bash
+# If you want to remove these sliced JSON files except the original one then type
+
+$ rm -v !("sampled.jsonl")
+$ mv sampled.jsonl ../
+
+$ rmdir splitted_data/
+````
 3. Subset Asians
 4. Classify hate speech
 5. Classify race

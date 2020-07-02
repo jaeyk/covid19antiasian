@@ -43,7 +43,7 @@ cle$month <- cle$V2 %>%
 
 sampled <- cle %>%
   group_by(month) %>%
-  slice_sample(n = 200000, 
+  slice_sample(n = 1000000, 
                replace = FALSE)
 
 ```
@@ -59,6 +59,9 @@ fwrite(sampled[-1,], here("processed_data", "sampled.tsv"))
 
 # Only Tweet IDs
 fwrite(sampled[-1,1], here("processed_data", "sampled1.tsv"))
+
+df <- fread(here("processed_data", "sampled1.tsv"))
+
 
 ```
 
