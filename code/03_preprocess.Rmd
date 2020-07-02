@@ -11,11 +11,11 @@ output: html_document
 
 ```{r}
 
-pacman::p_load(tidyverse, # tidyverse 
-               here, # reproducibility 
-               dbplyr, # to use database with dplyr 
-               RSQLite) # for SQLite
-
+pacman::p_load(tidyverse, # for tidyverse 
+               here, # for reproducibility 
+               countrycode, # to convert country code <-> country name 
+               stringr, # for easy regular expression
+               lubridate) # for easy time var manipulation
 ```
 
 ## Files 
@@ -32,10 +32,14 @@ parsed <- readRDS(file.choose())
 
 ```{r}
 
+# Select columns 
 selected <- parsed %>% 
     select(country_code, created_at, full_text) %>%
     filter(!is.na(country_code))
 
+# Remove cases where country code is ""
+selected <- selected %>%
+    filter(!(country_code == ""))
 ```
 
 ### Mutate 
@@ -51,9 +55,15 @@ selected <- selected %>%
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
            asian = as.numeric(str_detect(full_text, "asia|asian")),
            chinese = as.numeric(str_detect(full_text, "china|chinese")),
-           US = ifelse(country_code == "US", 1, 0)
+           US = ifelse(country_code == "US", 1, 0),
+           country_name = countrycode(country_code, "iso2c", "country.name")
     )
 
+selected$date <- as.POSIXct(selected$created_at, 
+                            tz = "UTC",
+                            format = "%a %b %d %H:%M:%S %z %Y") %>% # Reformat date-time 
+                 word(1) # Only year month date 
+    
 # Remove except selected
 rm(list = setdiff(ls(), "selected"))
 
@@ -63,9 +73,11 @@ rm(list = setdiff(ls(), "selected"))
 
 
 ```{r}
+
 selected %>% 
-    group_by(US) %>%
-    count()
+    group_by(country_name) %>%
+    count(sort = TRUE)
+
 ```
 
 
