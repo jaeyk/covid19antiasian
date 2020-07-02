@@ -41,6 +41,10 @@ cle$month <- cle$V2 %>%
 
 ```{r}
 
+# For reproducibility 
+set.seed(1234)
+
+# Random sampling stratified by month 
 sampled <- cle %>%
   group_by(month) %>%
   slice_sample(n = 1000000, 
@@ -57,11 +61,8 @@ sampled <- cle %>%
 # Full data 
 fwrite(sampled[-1,], here("processed_data", "sampled.tsv"))
 
-# Only Tweet IDs
+# Only Tweet IDs. This file will be used for hydrating.
 fwrite(sampled[-1,1], here("processed_data", "sampled1.tsv"))
-
-df <- fread(here("processed_data", "sampled1.tsv"))
-
 
 ```
 
