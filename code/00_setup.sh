@@ -1,5 +1,5 @@
 #!/bin/bash
-# Set up automatically 
+# Set up automatically
 
 # Download the file in the raw_data subdirectory of the project directory
 

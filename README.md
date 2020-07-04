@@ -60,7 +60,7 @@ $ twarc hydrate sampled1.tsv > sampled.jsonl
 ```bash
 # Create a subdirectory and move the file there
 $ mkdir splitted_data
-$ mv splitted.jsonl splitted_data/
+$ mv sampled.jsonl splitted_data/ | cd splitted_data/
 
 # Divide the json file by 1000 lines (Tweets)
 $ split -1000 sampled.jsonl --verbose
@@ -88,9 +88,15 @@ $ mv sampled.jsonl ../
 
 $ rmdir splitted_data/
 ````
-3. Subset Asians
-4. Classify hate speech
-5. Classify race
-6. Classify partisanship https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/AEZPLU
-7. Topic modeling (keyATM) https://keyatm.github.io/keyATM/index.html
-8. Creating a dashboard
+3. Exploratory data analysis
+
+4. Topic modeling
+
+https://www.aclweb.org/anthology/E12-1021/
+
+https://keyatm.github.io/keyATM/index.html
+
+"the specification of keywords before fitting the model, thereby avoiding post-hoc
+interpretation and adjustments of topics." (page 2)
+
+"this model provides more interpretable topics, more accurate classification performance, and less sensitivity to starting values than the dynamic model without keywords. Finally, the model appears to better capture the dynamic trend of topic prevalence." (page 2)
