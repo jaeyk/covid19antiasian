@@ -2,7 +2,7 @@
 Investigation the relationship between COVID-19 and the Anti-Asian Climate
 
 ## Workflow
-1. Downalod and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all extracted files except the English Twitter data (2.3 GB).
+1. Download and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all extracted files except the English Twitter data (2.3 GB).
 
 - I took all of these steps in the command-line interface to increase efficiency, transparency and reproducibility. The tsv file (`clean_language_en.tsv`) contains 59,650,755 observations.
 
@@ -55,7 +55,7 @@ $ twarc hydrate sampled1.tsv > sampled.jsonl
 
 ```
 
-- The next step is turn the JSON file into a csv file. `tidyjson` is a great tool to turn a messy JSON file, ingested from the Twitter APID, into a tidyverse-ready dataframe. I wrote an R function (`twitter_json2csv.R`). The problem is the JSON file is too huge to be parsed into a R session. (Your session will be killed automatically.) To get around this problem, I split the JSON file into smaller chunks and applied the parser.
+- The next step is turn the JSON file into a csv file. `tidyjson` is a great tool to turn a messy JSON file, ingested from the Twitter API, into a tidyverse-ready dataframe. I wrote an R function (`twitter_json2csv.R`). The problem is the JSON file is too huge to be parsed into a R session. (Your session will be killed automatically.) To get around this problem, I split the JSON file into smaller chunks and applied the parser.
 
 ```bash
 # Create a subdirectory and move the file there

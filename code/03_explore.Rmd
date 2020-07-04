@@ -11,7 +11,8 @@ output: html_document
 
 ```{r}
 
-pacman::p_load(tidyverse, # for tidyverse 
+pacman::p_load(data.table, # for fast data manipulation
+               tidyverse, # for tidyverse 
                ggpubr, # for arranging ggplots   
                ggthemes, # for fancy ggplot themes
                here, # for reproducibility 
@@ -23,6 +24,10 @@ pacman::p_load(tidyverse, # for tidyverse
                forcats, # reverse factor order 
                patchwork, # for easy ggarrange
                ggsci) # for pubs 
+
+devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
+
+library(tidytweetjson)
 
 # for publication-friendly theme 
 theme_set(theme_pubr())
@@ -40,7 +45,6 @@ source(here("functions", "stacked_bar_plot.R"))
 
 parsed <- readRDS(here("processed_data", "parsed.rds"))
 
-sum(is.na(parsed))/nrow(parsed)
 ```
 
 # Wrangle 
@@ -51,6 +55,9 @@ sum(is.na(parsed))/nrow(parsed)
 - I did not use country_code field as it is mostly filled with NAs (97%).
 
 ```{r}
+
+
+sum(is.na(parsed$country_code))/nrow(parsed)
 
 filtered <- parsed %>%
     filter(!(location == "" | is.na(location)))
@@ -69,7 +76,11 @@ selected <- filtered %>%
 
 ## Mutate 
 
-`maps::us.cities` database includes the names of the US cities whose population sizes are larger than 40,000. 
+### Location 
+
+- `maps::us.cities` database includes the names of the US cities whose population sizes are larger than 40,000. 
+
+- 41% of the Tweets were created by the users located in the US.
 
 ```{r}
 
@@ -77,109 +88,112 @@ selected <- filtered %>%
 
 us_cities <- maps::us.cities$name %>% str_replace_all(" [[:alpha:]]*$", "") %>% unique() %>% tolower()
 
-us_states_abb <- maps::us.cities$name %>% stringr::word(-1) %>% unique() %>% tolower()
-
 us_states <- maps::us.cities$name %>% stringr::word(-1) %>% unique() %>% abbr2state() %>% tolower()
 
-us_country <- c("United States", "USA", "US") %>% tolower()
+us_country <- c("United States", "USA", "US", "U.S.A.") %>% tolower()
 
-us_location_list <- c(us_cities, us_states_abb, us_states, us_country) %>% paste(collapse = "|")
+us_location_list <- c(us_cities, us_states, us_country)
 
-selected <- selected %>% 
-    mutate(US = str_detect(location %>% towlower(), c(us_cities, us_states_abb, us_states, us_country) %>% paste(collapse = "|")) %>% as.numeric())
+```
 
-# Lower case 
-selected$full_text <- str_to_lower(selected$full_text)
+```{r}
+
+selected$US <- str_detect(selected$location %>% tolower(), us_location_list %>% paste(collapse = "|")) %>% as.numeric()
+
+sum(selected$US)/nrow(selected)
+
+```
+
+```{r}
+
+df <- selected %>% filter(US == 1)
+
+fwrite(df, here("processed_data", "US_tweets.csv"))
+
+df <- fread(here("processed_data", "US_tweets.csv"))
+
+```
+
+### Text 
+
+```{r}
 
 # Create new columns 
-selected <- selected %>%
+df <- df %>%
     mutate(full_text = str_to_lower(full_text),
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
            asian = as.numeric(str_detect(full_text, "asia|asian")),
-           chinese = as.numeric(str_detect(full_text, "china|chinese")),
-           country_name = countrycode(country_code, "iso2c", "country.name")
-    )
+           chinese = as.numeric(str_detect(full_text, "china|chinese")))
 
-# Reformat date-time 
-selected$date <- as.POSIXct(selected$created_at, 
-                            tz = "UTC",
-                            format = "%a %b %d %H:%M:%S %z %Y") %>% #
-                 word(1) # Only year month date 
+```
 
-# Only month 
-# selected$month <- months(as.Date(selected$date)) %>%
-#    fct_relevel("January", "February", "March", "April", "May", # "June") # Relevel factor order 
+### Date
 
-# Remove except selected
-# rm(list = setdiff(ls(), "selected"))
+```{r}
+df <- tidytweetjson::add_date(df)
 
+#df[1:10,] %>% select(created_at, date)
 ```
 
 # Explore 
 
-## Trends in the top 10 countries (by count)
+## Time-series
+
+### Overall 
 
 ```{r}
 
-# Create a list 
-sorted <- selected %>% 
-    group_by(country_name) %>%
-    count(sort = TRUE) 
-
-# Subquery, group by, then visualize 
-selected %>%
-    filter(country_name == intersect(country_name, sorted$country_name[1:9])) %>%
-    group_by(country_name, date) %>%
+# Group by date then visualize 
+df %>%
+    group_by(date) %>%
     count() %>%
-    ggplot(aes(x = as.Date(date), y = n, group = 1)) +
+    ggplot(aes(x = as.Date(date), y = log(n), group = 1)) +
         geom_line() +
-        facet_wrap(~country_name, ncol = 3) +
         labs(x = "Date",
-             y = "Count",
+             y = "Logged count",
              title = "The Count of Tweets on COVID-19",
-             subtitle = "These nine countries were selected by the number of tweets.")
+             subtitle = "The Tweets were created by the users located in the US")
 
-ggsave(here("outputs", "top9_countries.png"), height = 7)
+ggsave(here("outputs", "overall_trend.png"), height = 7)
 
 ```
 
-## Trends in the US and UK (with a focus on concerned categories)
+### Keywords 
 
 ```{r}
 
-p1 <- stacked_bar_plot(selected, wuhan) +
+p1 <- stacked_area_plot(df, wuhan) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Wuhan",
-             title = "Wuhan")
+             title = "Wuhan",
+             subtitle = "The Tweets were created by the users located in the US")
 
-p2 <- stacked_bar_plot(selected, chinese) +
+p2 <- stacked_area_plot(df, chinese) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Chinese",
-             title = "Chinese")
+             title = "Chinese",
+             subtitle = "The Tweets were created by the users located in the US")
 
-p3 <- stacked_bar_plot(selected, asian) +
+p3 <- stacked_area_plot(df, asian) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Asian",
-             title = "Asian")
+             title = "Asian",
+             subtitle = "The Tweets were created by the users located in the US")
 
 p1 / p2 / p3
+
 ggsave(here("outputs", "stacked_bar_plots.png"),
        height = 10)
-
 ```
 
 # Export 
 
 ```{r}
 
-df <- subset(selected, country_code == "US") %>%
-    select("full_text", "wuhan", "asian", "chinese",
-           "date")
-
-write_csv(df, here("processed_data", "text_ready.csv"))
+fwrite(df, here("processed_data", "text_ready.csv"))
 
 ```
 
