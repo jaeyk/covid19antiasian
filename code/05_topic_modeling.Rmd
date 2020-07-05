@@ -1,0 +1,72 @@
+---
+title: "03_preprocess_data"
+author: "Jae Yeon Kim"
+date: "7/2/2020"
+output: html_document
+---
+
+# Import packages and files 
+
+## Packages
+
+```{r}
+
+pacman::p_load(tidyverse, # for tidyverse 
+               ggpubr, # for arranging ggplots   
+               ggthemes, # for fancy ggplot themes
+               here, # for reproducibility 
+               patchwork, # for easy ggarrange
+               ggsci, # for pubs 
+               fastDummies, # to create dummy variables fast
+               keyATM, # for keyword based topic modeling 
+               data.table) # for fast data manipulation
+
+# for publication-friendly theme 
+theme_set(theme_pubr())
+
+# custom functions
+source(here("functions", "stacked_bar_plot.R"))
+
+```
+
+## Files 
+
+```{r}
+
+df <- fread(here("processed_data", "cleaned_data.csv"))
+
+```
+
+## Add covariates 
+
+```{r}
+# Trump
+df <- df %>%
+    mutate(trump = as.numeric(str_detect(full_text, "trump")))
+
+```
+
+# Preprocess 
+
+```{r}
+
+df$full_text <- df$full_text %>%
+                       replace_hash() %>% 
+                       replace_emoji() %>% 
+                       replace_emoticon() %>%
+                       replace_html() %>% 
+                       replace_tag() %>%
+                       replace_symbol() %>%
+                       replace_contraction() %>%
+                       replace_incomplete() %>%
+                       replace_contraction() %>%
+                       add_comma_space() %>%
+                       str_replace_all("https", "") %>%
+                       str_replace_all("[[:punct:] ]+", " ") %>%
+                       trimws()
+
+```
+
+
+# Topic modeling 
+
