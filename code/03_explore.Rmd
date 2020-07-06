@@ -16,7 +16,6 @@ pacman::p_load(data.table, # for fast data manipulation
                ggpubr, # for arranging ggplots   
                ggthemes, # for fancy ggplot themes
                here, # for reproducibility 
-               countrycode, # to convert country code <-> country name 
                maps, # for US city data
                openintro, # for revert state name abbreviations to their original forms 
                stringr, # for easy regular expression
@@ -25,15 +24,16 @@ pacman::p_load(data.table, # for fast data manipulation
                patchwork, # for easy ggarrange
                ggsci) # for pubs 
 
-devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
+#devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
+# devtools::install_github("jaeyk/makereproducible", force = TRUE)
 
 library(tidytweetjson)
-
+library(makereproducible)
 # for publication-friendly theme 
 theme_set(theme_pubr())
 
 # custom functions
-source(here("functions", "stacked_bar_plot.R"))
+source(here("functions", "stacked_area_plot.R"))
 
 ```
 
@@ -56,7 +56,6 @@ parsed <- readRDS(here("processed_data", "parsed.rds"))
 
 ```{r}
 
-
 sum(is.na(parsed$country_code))/nrow(parsed)
 
 filtered <- parsed %>%
@@ -70,7 +69,7 @@ filtered <- parsed %>%
 
 # Select columns 
 selected <- filtered %>% 
-    select(country_code, location, created_at, full_text) 
+    select(created_at, full_text, location) 
 
 ```
 
@@ -104,13 +103,26 @@ sum(selected$US)/nrow(selected)
 
 ```
 
+### Filter
 ```{r}
+
+# Filter US cases
 
 df <- selected %>% filter(US == 1)
 
-fwrite(df, here("processed_data", "US_tweets.csv"))
+# Filter incorrect cases (non-US cases still categorized as US cases)
 
-df <- fread(here("processed_data", "US_tweets.csv"))
+## Country dict 
+countryname_dict <- unique(maps::world.cities[,2])
+
+countryname_dict <- countryname_dict[!countryname_dict %in% c("United States", "USA", "U.S.A.")]
+
+## Filter 
+df$non_US <- str_detect(df$location %>% tolower(), countryname_dict %>% tolower() %>% paste(collapse = "|")) %>% as.numeric()
+
+sum(df$non_US)/nrow(df) # 90% would remain after the filtering  
+
+df <- df %>% filter(non_US == 0)
 
 ```
 
@@ -123,7 +135,8 @@ df <- df %>%
     mutate(full_text = str_to_lower(full_text),
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
            asian = as.numeric(str_detect(full_text, "asia|asian")),
-           chinese = as.numeric(str_detect(full_text, "china|chinese")))
+           chinese = as.numeric(str_detect(full_text, "china|chinese")),
+           trump = as.numeric(str_detect(full_text, "trump")))
 
 ```
 
@@ -133,6 +146,11 @@ df <- df %>%
 df <- tidytweetjson::add_date(df)
 
 #df[1:10,] %>% select(created_at, date)
+
+fwrite(df, here("processed_data", "US_tweets.csv"))
+
+#df <- fread(here("processed_data", "US_tweets.csv"))
+
 ```
 
 # Explore 
@@ -143,18 +161,45 @@ df <- tidytweetjson::add_date(df)
 
 ```{r}
 
-# Group by date then visualize 
-df %>%
-    group_by(date) %>%
-    count() %>%
-    ggplot(aes(x = as.Date(date), y = log(n), group = 1)) +
-        geom_line() +
+# Google 
+gtrends <- read_csv(here("processed_data", "gtrends.csv"))
+
+gtrends_plot <- gtrends %>%
+    rename(Terms = keywords) %>%
+    ggplot(aes(x = as.Date(date), y = log(hits),
+               col = Terms, 
+               linetype = Terms)) +
+        geom_line(size = 1) +
         labs(x = "Date",
              y = "Logged count",
-             title = "The Count of Tweets on COVID-19",
-             subtitle = "The Tweets were created by the users located in the US")
+             title = "Google Searches on COVID-19",
+             subtitle = "In the US",
+             source = "Google API")
 
-ggsave(here("outputs", "overall_trend.png"), height = 7)
+# Twitter 
+## Group by date then visualize 
+twitter_plot <- df %>%
+    pivot_longer(cols = c("asian", "chinese", "wuhan", "trump"), 
+                 names_to = "Terms",
+                 values_to = "Hits") %>%
+    mutate(Terms = stringr::str_to_title(Terms)) %>%
+    filter(Hits == 1) %>%
+    group_by(Terms, date) %>%
+    count() %>%
+    ggplot(aes(x = as.Date(date), y = log(n),
+               col = Terms,
+               linetype = Terms)) +
+        geom_line(size = 1) +
+        labs(x = "Date",
+             y = "Logged count",
+             title = "Tweets on COVID-19",
+             subtitle = "In the US",
+             source = "Twitter API and Panacealab") 
+        
+
+gtrends_plot + twitter_plot
+
+ggsave(here("outputs", "overall_trend.png"), width = 10)
 
 ```
 
@@ -162,31 +207,40 @@ ggsave(here("outputs", "overall_trend.png"), height = 7)
 
 ```{r}
 
+# df <- data.table::fread(here("processed_data", "text_ready.csv"))
+
 p1 <- stacked_area_plot(df, wuhan) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Wuhan",
              title = "Wuhan",
-             subtitle = "The Tweets were created by the users located in the US")
+             subtitle = "Tweets created by the users located in the US")
 
 p2 <- stacked_area_plot(df, chinese) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Chinese",
              title = "Chinese",
-             subtitle = "The Tweets were created by the users located in the US")
+             subtitle = "Tweets created by the users located in the US")
 
 p3 <- stacked_area_plot(df, asian) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Asian",
              title = "Asian",
-             subtitle = "The Tweets were created by the users located in the US")
+             subtitle = "Tweets created by the users located in the US")
 
-p1 / p2 / p3
+p4 <- stacked_area_plot(df, trump) +
+        labs(x = "Date",
+             y = "Proportion",
+             fill = "Trump",
+             title = "Trump",
+             subtitle = "Tweets created by the users located in the US")
+
+(p1 + p2) / (p3 + p4)
 
 ggsave(here("outputs", "stacked_bar_plots.png"),
-       height = 10)
+       height = 10, width = 12)
 ```
 
 # Export 

@@ -1,17 +1,19 @@
 
-stacked_area_plot() <- function(df, var){
+stacked_area_plot <- function(df, var){
     
-df %>%
+  df %>%
     mutate(var = recode({{var}}, 
-                          '1' = 'Yes',
-                          '0' = 'No')) %>%
+                        '1' = 'Yes',
+                        '0' = 'No')) %>%
     group_by(date, var) %>%
-    count() %>%
-    ggplot(aes(x = as.Date(date), y = n,
-               col = factor(var))) +
-    geom_line() +
+    dplyr::summarize(n = n()) %>%
+    mutate(prop = n / sum(n),
+           prop = round(prop,2)) %>%
+    ggplot(aes(x = as.Date(date), y = prop,
+               fill = factor(var))) +
+    geom_area() +
     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     theme_pubr() +
     scale_fill_npg() 
-    
-    }
+  
+}
