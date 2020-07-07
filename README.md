@@ -100,3 +100,13 @@ https://keyatm.github.io/keyATM/index.html
 interpretation and adjustments of topics." (page 2)
 
 "this model provides more interpretable topics, more accurate classification performance, and less sensitivity to starting values than the dynamic model without keywords. Finally, the model appears to better capture the dynamic trend of topic prevalence." (page 2)
+
+Lit. review
+
+https://arxiv.org/abs/2004.11692
+
+https://arxiv.org/abs/2005.03082
+
+https://www.jmir.org/2020/4/e19016/
+
+https://link.springer.com/chapter/10.1007/978-3-319-06608-0_13

@@ -18,6 +18,7 @@ pacman::p_load(tidyverse, # for tidyverse
                patchwork, # for easy ggarrange
                ggsci, # for pubs 
                fastDummies, # to create dummy variables fast
+               readtext, # for reading text
                quanteda, # for text preprocessing 
                keyATM, # for keyword based topic modeling 
                data.table) # for fast data manipulation
@@ -40,7 +41,44 @@ df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1]
 
 # Preprocess 
 
-I followed [the guideline](https://keyatm.github.io/keyATM/articles/pkgdown_files/Preparation.html) provided by the keyATM package developer.
+```{r}
+
+# Build a corpus 
+my_corpus <- corpus(df$full_text)
+
+# Add the document-level covariates 
+docvars(my_corpus, "wuhan") <- df$wuhan
+
+docvars(my_corpus, "asian") <- df$asian
+
+docvars(my_corpus, 
+"chinese") <- df$chinese
+
+docvars(my_corpus, 
+"trump") <- df$trump
+
+# Check the document-level covariates 
+head(docvars(my_corpus))
+
+# Tokenize 
+data_tokens <- tokens(my_corpus,
+                      remove_url = TRUE) %>%
+    tokens_remove(c(stopwords("english"),
+                               "may", "shall", "can",
+                               "must", "upon", "with", "without")) %>%       
+    tokens_select(min_nchar = 3)
+
+# Construct a document-term matrix 
+
+data_dfm <- dfm(data_tokens) %>%
+  dfm_trim(min_termfreq = 1000, 
+           min_docfreq = 1000)
+
+write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
+
+#data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
+
+```
 
 ```{r}
 key_corpus <- corpus(df, text_field = "full_text", 

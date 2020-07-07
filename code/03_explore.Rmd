@@ -24,7 +24,7 @@ pacman::p_load(data.table, # for fast data manipulation
                patchwork, # for easy ggarrange
                ggsci) # for pubs 
 
-#devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
+devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
 # devtools::install_github("jaeyk/makereproducible", force = TRUE)
 
 library(tidytweetjson)
@@ -34,7 +34,7 @@ theme_set(theme_pubr())
 
 # custom functions
 source(here("functions", "stacked_area_plot.R"))
-source(here("functions", "add_US_location.R"))
+
 ```
 
 ## Files 
@@ -87,9 +87,11 @@ selected <- filtered %>%
 
 df <- add_US_location(selected)
 
-df <- df %>% filter(US == 1 & non_US == 0)
+df[["US_location"]] <- ifelse(df[["US"]] == 1 & df[["non_US"]] == 0, 1, 0)
 
-nrow(df)/nrow(selected)
+df <- add_US_location(df)
+
+# nrow(df)/nrow(selected)
 
 ```
 
