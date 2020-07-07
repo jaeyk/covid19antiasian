@@ -34,7 +34,7 @@ theme_set(theme_pubr())
 
 # custom functions
 source(here("functions", "stacked_area_plot.R"))
-
+source(here("functions", "add_US_location.R"))
 ```
 
 ## Files 
@@ -77,52 +77,19 @@ selected <- filtered %>%
 
 ### Location 
 
-- `maps::us.cities` database includes the names of the US cities whose population sizes are larger than 40,000. 
-
-- 41% of the Tweets were created by the users located in the US.
+- 37% of the Tweets were created by the users located in the US.
 
 ```{r}
 
-# Identify US location 
+# Add two columns
+# US: located in the US identified by the names of the US states and cities 
+# non_US: located not in the US identified by the names of the non-US countries 
 
-us_cities <- maps::us.cities$name %>% str_replace_all(" [[:alpha:]]*$", "") %>% unique() %>% tolower()
+df <- add_US_location(selected)
 
-us_states <- maps::us.cities$name %>% stringr::word(-1) %>% unique() %>% abbr2state() %>% tolower()
+df <- df %>% filter(US == 1 & non_US == 0)
 
-us_country <- c("United States", "USA", "US", "U.S.A.") %>% tolower()
-
-us_location_list <- c(us_cities, us_states, us_country)
-
-```
-
-```{r}
-
-selected$US <- str_detect(selected$location %>% tolower(), us_location_list %>% paste(collapse = "|")) %>% as.numeric()
-
-sum(selected$US)/nrow(selected)
-
-```
-
-### Filter
-```{r}
-
-# Filter US cases
-
-df <- selected %>% filter(US == 1)
-
-# Filter incorrect cases (non-US cases still categorized as US cases)
-
-## Country dict 
-countryname_dict <- unique(maps::world.cities[,2])
-
-countryname_dict <- countryname_dict[!countryname_dict %in% c("United States", "USA", "U.S.A.")]
-
-## Filter 
-df$non_US <- str_detect(df$location %>% tolower(), countryname_dict %>% tolower() %>% paste(collapse = "|")) %>% as.numeric()
-
-sum(df$non_US)/nrow(df) # 90% would remain after the filtering  
-
-df <- df %>% filter(non_US == 0)
+nrow(df)/nrow(selected)
 
 ```
 
@@ -149,7 +116,7 @@ df <- tidytweetjson::add_date(df)
 
 fwrite(df, here("processed_data", "US_tweets.csv"))
 
-#df <- fread(here("processed_data", "US_tweets.csv"))
+# df <- fread(here("processed_data", "US_tweets.csv"))
 
 ```
 
@@ -166,38 +133,34 @@ gtrends <- read_csv(here("processed_data", "gtrends.csv"))
 
 gtrends_plot <- gtrends %>%
     rename(Terms = keywords) %>%
-    ggplot(aes(x = as.Date(date), y = log(hits),
-               col = Terms, 
-               linetype = Terms)) +
+    ggplot(aes(x = as.Date(date), y = hits)) +
         geom_line(size = 1) +
+        facet_wrap(~Terms) +
         labs(x = "Date",
-             y = "Logged count",
-             title = "Google Searches on COVID-19",
-             subtitle = "In the US",
-             source = "Google API")
+             y = "Count",
+             title = "Google Searches on COVID-19 (In the US)",
+             subtitle = "Normalized to a 0-100 range") +
+        geom_vline(xintercept = as.Date("2020-01-24"))
 
 # Twitter 
 ## Group by date then visualize 
-twitter_plot <- df %>%
-    pivot_longer(cols = c("asian", "chinese", "wuhan", "trump"), 
-                 names_to = "Terms",
-                 values_to = "Hits") %>%
-    mutate(Terms = stringr::str_to_title(Terms)) %>%
-    filter(Hits == 1) %>%
-    group_by(Terms, date) %>%
-    count() %>%
-    ggplot(aes(x = as.Date(date), y = log(n),
-               col = Terms,
-               linetype = Terms)) +
-        geom_line(size = 1) +
-        labs(x = "Date",
-             y = "Logged count",
-             title = "Tweets on COVID-19",
-             subtitle = "In the US",
-             source = "Twitter API and Panacealab") 
-        
 
-gtrends_plot + twitter_plot
+twitter_plot <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"), 
+          mutate(add_normalized(df, chinese), Terms = "Chinese"),
+          mutate(add_normalized(df, wuhan), Terms = "Wuhan"),
+          mutate(add_normalized(df, trump), Terms = "Trump")
+          )
+             
+twitter_plot <- twitter_plot %>%
+    ggplot(aes(x = as.Date(date), y = rescaled)) +
+        geom_line(size = 1) +
+        facet_wrap(~Terms) +
+        labs(x = "Date",
+             y = "Count ",
+             title = "Tweets on COVID-19 (in the US)",
+             subtitle = "Normalized to a 0-100 range") 
+                    
+gtrends_plot / twitter_plot 
 
 ggsave(here("outputs", "overall_trend.png"), width = 10)
 

@@ -43,6 +43,9 @@ df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1]
 I followed [the guideline](https://keyatm.github.io/keyATM/articles/pkgdown_files/Preparation.html) provided by the keyATM package developer.
 
 ```{r}
-key_corpus <- corpus(df, text_field = "full_text")
+key_corpus <- corpus(df, text_field = "full_text", 
+                     docvars = COVARIATE)
+
+?corpus
 ```
 
