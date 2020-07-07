@@ -77,7 +77,7 @@ selected <- filtered %>%
 
 ### Location 
 
-- 37% of the Tweets were created by the users located in the US.
+- 37% of the Tweets (1,394,468) were created by the users located in the US.
 
 ```{r}
 
@@ -113,10 +113,13 @@ df <- df %>%
 df <- tidytweetjson::add_date(df)
 
 #df[1:10,] %>% select(created_at, date)
+```
+
+```{r}
 
 fwrite(df, here("processed_data", "US_tweets.csv"))
 
-# df <- fread(here("processed_data", "US_tweets.csv"))
+df <- fread(here("processed_data", "US_tweets.csv"))
 
 ```
 
@@ -133,11 +136,12 @@ gtrends <- read_csv(here("processed_data", "gtrends.csv"))
 
 gtrends_plot <- gtrends %>%
     rename(Terms = keywords) %>%
-    ggplot(aes(x = as.Date(date), y = hits)) +
+    ggplot(aes(x = as.Date(date), y = log(hits),
+               col = Terms,
+               linetype = Terms)) +
         geom_line(size = 1) +
-        facet_wrap(~Terms) +
         labs(x = "Date",
-             y = "Count",
+             y = "Logged count",
              title = "Google Searches on COVID-19 (In the US)",
              subtitle = "Normalized to a 0-100 range") +
         geom_vline(xintercept = as.Date("2020-01-24"))
@@ -152,11 +156,12 @@ twitter_plot <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"),
           )
              
 twitter_plot <- twitter_plot %>%
-    ggplot(aes(x = as.Date(date), y = rescaled)) +
+    ggplot(aes(x = as.Date(date), y = log(rescaled),
+               col = Terms, 
+               linetype = Terms)) +
         geom_line(size = 1) +
-        facet_wrap(~Terms) +
         labs(x = "Date",
-             y = "Count ",
+             y = "Logged count",
              title = "Tweets on COVID-19 (in the US)",
              subtitle = "Normalized to a 0-100 range") 
                     
