@@ -60,30 +60,40 @@ docvars(my_corpus,
 # Check the document-level covariates 
 head(docvars(my_corpus))
 
+```
+
+```{r}
 # Tokenize 
 data_tokens <- tokens(my_corpus,
                       remove_url = TRUE) %>%
     tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
-                               "must", "upon", "with", "without")) %>%       
-    tokens_select(min_nchar = 3)
-
-# Construct a document-term matrix 
-
-data_dfm <- dfm(data_tokens) %>%
-  dfm_trim(min_termfreq = 1000, 
-           min_docfreq = 1000)
-
-write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
-
-#data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
-
+                               "must", "upon", "with", "without"))
 ```
 
 ```{r}
-key_corpus <- corpus(df, text_field = "full_text", 
-                     docvars = COVARIATE)
+# Construct a document-term matrix 
 
-?corpus
+data_dfm <- dfm(data_tokens) %>%
+    dfm_trim(min_termfreq = 1115574, 
+             min_docfreq = 1115574)
+
+# 1394468 * 0.8 = 1115574
 ```
 
+```{r}
+# write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
+
+# data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
+```
+
+```{r}
+# Prepare the data for keyATM
+
+future::plan("multiprocess")
+
+tictoc::tic()
+keyATM_docs <- keyATM_read(texts = data_dfm)
+tictoc::toc()
+
+```

@@ -24,7 +24,7 @@ pacman::p_load(data.table, # for fast data manipulation
                patchwork, # for easy ggarrange
                ggsci) # for pubs 
 
-devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
+# devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
 # devtools::install_github("jaeyk/makereproducible", force = TRUE)
 
 library(tidytweetjson)
@@ -34,7 +34,7 @@ theme_set(theme_pubr())
 
 # custom functions
 source(here("functions", "stacked_area_plot.R"))
-
+source(here("functions", "add_normalized.R"))
 ```
 
 ## Files 
@@ -148,16 +148,19 @@ gtrends_plot <- gtrends %>%
              subtitle = "Normalized to a 0-100 range") +
         geom_vline(xintercept = as.Date("2020-01-24"))
 
+```
+
+```{r}
 # Twitter 
 ## Group by date then visualize 
 
-twitter_plot <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"), 
+twitter <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"), 
           mutate(add_normalized(df, chinese), Terms = "Chinese"),
           mutate(add_normalized(df, wuhan), Terms = "Wuhan"),
           mutate(add_normalized(df, trump), Terms = "Trump")
           )
              
-twitter_plot <- twitter_plot %>%
+twitter_plot <- twitter %>%
     ggplot(aes(x = as.Date(date), y = log(rescaled),
                col = Terms, 
                linetype = Terms)) +
@@ -166,7 +169,10 @@ twitter_plot <- twitter_plot %>%
              y = "Logged count",
              title = "Tweets on COVID-19 (in the US)",
              subtitle = "Normalized to a 0-100 range") 
-                    
+      
+```
+
+```{r}
 gtrends_plot / twitter_plot 
 
 ggsave(here("outputs", "overall_trend.png"), width = 10)
