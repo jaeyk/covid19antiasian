@@ -20,7 +20,6 @@ pacman::p_load(tidyverse, # for tidyverse
                fastDummies, # to create dummy variables fast
                readtext, # for reading text
                quanteda, # for text preprocessing 
-               keyATM, # for keyword based topic modeling 
                data.table) # for fast data manipulation
 
 # for publication-friendly theme 
@@ -29,13 +28,23 @@ theme_set(theme_pubr())
 # custom functions
 source(here("functions", "stacked_bar_plot.R"))
 
+# For keyword based topic modeling (development version)
+devtools::install_github("keyATM/keyATM", ref = "package_dev")
+
+library(keyATM)
 ```
 
 ## Files 
 
+- Filter 90% of the data (by `chinese` and `wuhan` variables)
+
 ```{r}
 
-df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1]
+df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1] 
+
+small_df <- df %>% filter(chinese == 1 | wuhan == 1 | asian == 1)
+
+1 - nrow(small_df)/nrow(df)
 
 ```
 
@@ -44,18 +53,21 @@ df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1]
 ```{r}
 
 # Build a corpus 
-my_corpus <- corpus(df$full_text)
+my_corpus <- corpus(small_df$full_text)
 
 # Add the document-level covariates 
-docvars(my_corpus, "wuhan") <- df$wuhan
+docvars(my_corpus, "wuhan") <- small_df$wuhan
 
-docvars(my_corpus, "asian") <- df$asian
-
-docvars(my_corpus, 
-"chinese") <- df$chinese
+docvars(my_corpus, "asian") <- small_df$asian
 
 docvars(my_corpus, 
-"trump") <- df$trump
+"chinese") <- small_df$chinese
+
+docvars(my_corpus, 
+"trump") <- small_df$trump
+
+docvars(my_corpus, 
+"date") <- small_df$date
 
 # Check the document-level covariates 
 head(docvars(my_corpus))
@@ -68,24 +80,37 @@ data_tokens <- tokens(my_corpus,
                       remove_url = TRUE) %>%
     tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
-                               "must", "upon", "with", "without"))
+                               "must", "upon", "with", "without")) 
+
 ```
+
+# Document-term matrix 
 
 ```{r}
 # Construct a document-term matrix 
 
 data_dfm <- dfm(data_tokens) %>%
-    dfm_trim(min_termfreq = 1115574, 
-             min_docfreq = 1115574)
+    dfm_trim(min_termfreq = 100, 
+             min_docfreq = 100)
 
-# 1394468 * 0.8 = 1115574
 ```
 
 ```{r}
-# write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
+# Remove length 0 documents 
+data_dfm_fixed <- data_dfm[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89443, 102349, 110336, 120622, 121199, 122278, 122673, 125622, 133019),]
+
+```
+
+
+```{r}
+write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
 
 # data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
 ```
+
+# KeyATM
+
+## Prepare the data 
 
 ```{r}
 # Prepare the data for keyATM
@@ -93,7 +118,52 @@ data_dfm <- dfm(data_tokens) %>%
 future::plan("multiprocess")
 
 tictoc::tic()
-keyATM_docs <- keyATM_read(texts = data_dfm)
+keyATM_docs <- keyATM_read(texts = data_dfm_fixed)
 tictoc::toc()
 
+# 210.485 sec elapsed
+
 ```
+
+```{r}
+
+# Export 
+write_rds(keyATM_docs, here("processed_data", 
+                            "keyATM_docs.rds"))
+
+```
+
+## Create a dictionary of the key words 
+
+```{r}
+
+# Keywords 
+
+keywords <- list(anti_chinese = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
+
+```
+
+
+## Check keywords 
+
+```{r}
+
+key_viz <- visualize_keywords(docs = keyATM_docs, 
+                              keywords = keywords)
+
+save_fig(key_viz, here("outputs", "keyword.png")) 
+
+vf <- values_fig(key_viz) 
+
+```
+## Base model 
+
+```{r}
+out <- keyATM(docs = keyATM_docs,    # text input
+              no_keyword_topics = 5,              # number of topics without keywords
+              keywords = keywords,       # keywords
+              model = "base",         # select the model
+              options = list(seed = 250))
+```
+## Dynamic model
+
