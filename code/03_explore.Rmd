@@ -112,9 +112,11 @@ df <- df %>%
 ### Date
 
 ```{r}
+
 df <- tidytweetjson::add_date(df)
 
 #df[1:10,] %>% select(created_at, date)
+
 ```
 
 ```{r}
@@ -175,7 +177,7 @@ twitter_plot <- twitter %>%
 ```{r}
 gtrends_plot / twitter_plot 
 
-ggsave(here("outputs", "overall_trend.png"), width = 10)
+ggsave(here("outputs", "overall_trend.png"), height = 10)
 
 ```
 

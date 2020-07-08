@@ -103,9 +103,9 @@ data_dfm_fixed <- data_dfm[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89
 
 
 ```{r}
-write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
+# write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
 
-# data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
+data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
 ```
 
 # KeyATM
@@ -128,9 +128,10 @@ tictoc::toc()
 ```{r}
 
 # Export 
-write_rds(keyATM_docs, here("processed_data", 
-                            "keyATM_docs.rds"))
+# write_rds(keyATM_docs, here("processed_data", 
+#                            "keyATM_docs.rds"))
 
+keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 ```
 
 ## Create a dictionary of the key words 
@@ -160,10 +161,47 @@ vf <- values_fig(key_viz)
 
 ```{r}
 out <- keyATM(docs = keyATM_docs,    # text input
-              no_keyword_topics = 5,              # number of topics without keywords
+              no_keyword_topics = 1,              # number of topics without keywords
               keywords = keywords,       # keywords
               model = "base",         # select the model
               options = list(seed = 250))
+
+write_rds(out, here("outputs", "keyATM_out.rds"))
+
 ```
+
+```{r}
+
+# Check the tod words 
+top_words(out) 
+
+```
+
+```{r}
+
+topic_out <- tibble(topic_counts = out$topic_counts,
+                    names = c("Anti-Asian", "Others"))
+
+topic_out %>% 
+    mutate(prop = topic_counts / sum(topic_counts),
+           prop = round(prop,2)) %>%
+    ggplot(aes(x = names, y = prop)) +
+    geom_col() +
+    scale_y_continuous(labels =    
+    scales::percent_format(accuracy = 1)) +
+    labs(x = "Names", y = "Proportion", 
+          title = "Topic distributions",
+          subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
+
+ggsave(here("outputs", "topic_modeling_base.png"))
+    
+```
+
 ## Dynamic model
+
+```{r}
+
+test <- data_dfm_fixed %>% as_tibble() %>% head()
+
+```
 
