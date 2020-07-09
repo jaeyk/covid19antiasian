@@ -87,9 +87,7 @@ selected <- filtered %>%
 
 df <- add_US_location(selected)
 
-df[["US_location"]] <- ifelse(df[["US"]] == 1 & df[["non_US"]] == 0, 1, 0)
-
-df <- add_US_location(df)
+df <- subset(df, US_location == 1)
 
 # nrow(df)/nrow(selected)
 
@@ -105,7 +103,7 @@ df <- df %>%
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
            asian = as.numeric(str_detect(full_text, "asia|asian")),
            chinese = as.numeric(str_detect(full_text, "china|chinese")),
-           trump = as.numeric(str_detect(full_text, "trump")))
+           anti_asian = as.numeric(str_detect(full_text, "wuhanvirus|chinesevirus|chinavirus|wuhancoronavirus|wuhanpneumonia")))
 
 ```
 
@@ -148,8 +146,7 @@ gtrends_plot <- gtrends %>%
              y = "Logged count",
              title = "Google Searches on COVID-19 (In the US)",
              subtitle = "Normalized to a 0-100 range") +
-        geom_vline(xintercept = as.Date("2020-01-24"))
-
+        geom_vline(xintercept = as.Date(c("2020-03-16")))
 ```
 
 ```{r}
@@ -159,7 +156,7 @@ gtrends_plot <- gtrends %>%
 twitter <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"), 
           mutate(add_normalized(df, chinese), Terms = "Chinese"),
           mutate(add_normalized(df, wuhan), Terms = "Wuhan"),
-          mutate(add_normalized(df, trump), Terms = "Trump")
+          mutate(add_normalized(df, anti_asian), Terms = "Anti-Asian")
           )
              
 twitter_plot <- twitter %>%
@@ -170,7 +167,8 @@ twitter_plot <- twitter %>%
         labs(x = "Date",
              y = "Logged count",
              title = "Tweets on COVID-19 (in the US)",
-             subtitle = "Normalized to a 0-100 range") 
+             subtitle = "Normalized to a 0-100 range") +
+             geom_vline(xintercept = as.Date(c("2020-03-16")))
       
 ```
 
@@ -208,11 +206,11 @@ p3 <- stacked_area_plot(df, asian) +
              title = "Asian",
              subtitle = "Tweets created by the users located in the US")
 
-p4 <- stacked_area_plot(df, trump) +
+p4 <- stacked_area_plot(df, anti_asian) +
         labs(x = "Date",
              y = "Proportion",
-             fill = "Trump",
-             title = "Trump",
+             fill = "Anti-Asian",
+             title = "Anti-Asian",
              subtitle = "Tweets created by the users located in the US")
 
 (p1 + p2) / (p3 + p4)
