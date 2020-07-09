@@ -20,17 +20,13 @@ pacman::p_load(tidyverse, # for tidyverse
                fastDummies, # to create dummy variables fast
                readtext, # for reading text
                quanteda, # for text preprocessing 
-               data.table, # for fast data manipulation
-               stm, # for structural topic modeling
-               future, # for parallel and distributed computing      
-               purrr) # for functional programming 
+               data.table) # for fast data manipulation
 
 # for publication-friendly theme 
 theme_set(theme_pubr())
 
 # custom functions
 source(here("functions", "stacked_bar_plot.R"))
-source(here("functions", "visualize_diag.R"))
 
 # For keyword based topic modeling (development version)
 devtools::install_github("keyATM/keyATM", ref = "package_dev")
@@ -44,16 +40,12 @@ library(keyATM)
 
 ```{r}
 
-# Subset 
 df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1] 
 
 small_df <- df %>% filter(chinese == 1 | wuhan == 1 | asian == 1)
 
 1 - nrow(small_df)/nrow(df)
 
-# Filter (doc length 0 ones)
-
-small_df <- small_df[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89443, 102349, 110336, 120622, 121199, 122278, 122673, 125622, 133019),]
 ```
 
 # Preprocess 
@@ -72,20 +64,14 @@ docvars(my_corpus,
 "chinese") <- small_df$chinese
 
 docvars(my_corpus, 
+"trump") <- small_df$trump
+
+docvars(my_corpus, 
 "date") <- small_df$date
 
 # Check the document-level covariates 
 head(docvars(my_corpus))
 
-# Time index  
-
-index <- as.integer(gsub("-", "", docvars(my_corpus)$date))
-
-docvars(my_corpus, "index") <- c(index - min(index) + 1)
-
-# Check 
-docvars(my_corpus) %>%
-  arrange(date)
 ```
 
 ```{r}
@@ -109,6 +95,12 @@ data_dfm <- dfm(data_tokens) %>%
 
 ```
 
+```{r}
+# Remove length 0 documents 
+data_dfm_fixed <- data_dfm[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89443, 102349, 110336, 120622, 121199, 122278, 122673, 125622, 133019),]
+
+```
+
 
 ```{r}
 # write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
@@ -123,13 +115,13 @@ data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
 ```{r}
 # Prepare the data for keyATM
 
-# future::plan("multiprocess")
+future::plan("multiprocess")
 
 tictoc::tic()
-keyATM_docs <- keyATM_read(texts = data_dfm)
+keyATM_docs <- keyATM_read(texts = data_dfm_fixed)
 tictoc::toc()
 
-# 239.947 sec elapsed
+# 210.485 sec elapsed
 
 ```
 
@@ -137,7 +129,7 @@ tictoc::toc()
 
 # Export 
 # write_rds(keyATM_docs, here("processed_data", 
- #                           "keyATM_docs.rds"))
+#                            "keyATM_docs.rds"))
 
 keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 ```
@@ -165,36 +157,11 @@ save_fig(key_viz, here("outputs", "keyword.png"))
 vf <- values_fig(key_viz) 
 
 ```
-
-## Number of K
-
-```{r}
-
-# Run many models 
-many_models <- tibble(K = c(2:5)) %>%
-               mutate(topic_model = furrr::future_map(K, ~stm(data_dfm, 
-                                                       K = .,
-                                                       verbose = TRUE)))
-
-write_rds(many_models, here("outputs", "many_models.rds"))
-
-
-# Resolve conflicts 
-conflicted::conflict_prefer("purrr", "map")
-
-k_search_diag <- visualize_diag(data_dfm, many_models)
-
-ggsave(here("outputs", "k_search_diag.png"))
-```
-
 ## Base model 
 
 ```{r}
-
-future::plan("multiprocess")
-
 out <- keyATM(docs = keyATM_docs,    # text input
-              no_keyword_topics = 3,              # number of topics without keywords
+              no_keyword_topics = 1,              # number of topics without keywords
               keywords = keywords,       # keywords
               model = "base",         # select the model
               options = list(seed = 250))
@@ -213,7 +180,7 @@ top_words(out)
 ```{r}
 
 topic_out <- tibble(topic_counts = out$topic_counts,
-                    names = c("Anti-Asian", "Others". "Others". "Others"))
+                    names = c("Anti-Asian", "Others"))
 
 topic_out %>% 
     mutate(prop = topic_counts / sum(topic_counts),
@@ -234,17 +201,7 @@ ggsave(here("outputs", "topic_modeling_base.png"))
 
 ```{r}
 
-future::plan("multiprocess")
-
-dynamic_out <- keyATM(docs = keyATM_docs,    # text input
-              no_keyword_topics = 3,              # number of topics without keywords
-              keywords = keywords,       # keywords
-              model = "dynamic",         # select the model
-              model_settings = list(time_index = docvars(my_corpus)$index,
-                                    num_states = 5),
-              options = list(seed = 250))
- 
-write_rds(dynamic_out, here("outputs", "dynamic_out.rds"))
+test <- data_dfm_fixed %>% as_tibble() %>% head()
 
 ```
 

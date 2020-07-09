@@ -11,13 +11,12 @@ search_gtrends <- function(terms){
     # Search 
         trends <- gtrends(keyword = terms, 
                           geo = 'US', 
-                          # match to the twitter data
-                          time = "2020-01-09 2020-06-21",
+                          time = "2020-02-15 2020-03-16",
                           low_search_volume = TRUE)
     
     # Transform list into a tibble 
         results <- tibble(date = lubridate::ymd(trends$interest_over_time$date),
-                          hits = as.numeric(as.character(trends$interest_over_time$hits)),
+                          hits = trends$interest_over_time$hits,
                           keywords = trends$interest_over_time$keyword)
 
 }
@@ -34,6 +33,3 @@ gtrends <- bind_rows(search_gtrends("Coronavirus"),
 
 ## Export
 write_csv(gtrends, here("processed_data", "gtrends.csv"))
-
-
-test <- search_gtrends("Coronavirus")
