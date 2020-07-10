@@ -27,11 +27,13 @@ tictoc::toc()
 # Save 
 write_rds(dynamic_out_day, here("outputs", "dynamic_out_day.rds"))
 
+dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
+
 # Visualize 
-fig_timetrend_day <- plot_timetrend(dynamic_out_day, time_index_label = docvars(my_corpus)$month, xlab = "Date")
+fig_timetrend_day <- plot_timetrend(dynamic_out_day, time_index_label = docvars(my_corpus)$index, xlab = "Date")
 
 # Export 
 
-ggsave(fig_timetrend_day, here("outputs", "dynamic_topic_day.png"))
+fig_timetrend_day
 
-keyATM::docvars
+ggsave(fig_timetrend_day, here("outputs", "dynamic_topic_day.png"))

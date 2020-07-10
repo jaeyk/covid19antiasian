@@ -81,6 +81,9 @@ docvars(my_corpus,
 docvars(my_corpus, 
 "month") <- lubridate::month(small_df$date)
 
+```
+
+```{r}
 # Time index  
 
 # Convert date into integer 
@@ -91,7 +94,7 @@ index <- as.integer(gsub("-", "", docvars(my_corpus)$date))
 char_index <- as.character(index)
 
 # Condition 
-given <- sort(unique(char_index))
+given <- sort(unique(index)) %>% as.character()
 
 # For loop 
 for (i in seq(1:length(unique(index)))){
@@ -106,6 +109,9 @@ for (i in seq(1:length(unique(index)))){
 unique(char_index) %>% as.numeric() %>% sort()
 
 docvars(my_corpus, "index") <- char_index %>% as.integer()
+
+docvars(my_corpus) <- docvars(my_corpus) %>%
+  arrange(index)
 
 write_rds(my_corpus, here("outputs", "my_corpus.rds"))
 
@@ -134,9 +140,9 @@ data_dfm <- dfm(data_tokens) %>%
 
 
 ```{r}
-# write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
+write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
 
-data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
+# data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
 ```
 
 # KeyATM
@@ -152,7 +158,7 @@ tictoc::tic()
 keyATM_docs <- keyATM_read(texts = data_dfm)
 tictoc::toc()
 
-# 239.947 sec elapsed
+# 248.628 sec elapsed
 
 ```
 
@@ -179,7 +185,10 @@ keywords <- list(anti_chinese = c("wuhanvirus", "chinesevirus", "chinavirus", "w
 key_viz <- visualize_keywords(docs = keyATM_docs, 
                               keywords = keywords)
 save_fig(key_viz, here("outputs", "keyword.png")) 
+
 vf <- values_fig(key_viz) 
+
+key_viz
 ```
 
 ## Number of K
