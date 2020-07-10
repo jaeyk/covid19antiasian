@@ -1,6 +1,4 @@
 
-# The following code heavily draws on this blog post: https://www.statsandr.com/blog/draw-a-word-cloud-with-a-shiny-app/
-
 # load package 
 pacman::p_load(
     tidyverse, # tidyverse 
@@ -11,20 +9,32 @@ pacman::p_load(
 
 # load data 
 
-df <- read.csv(here("processed_data", "hash_counts.csv"))
+df <- read.csv(here("processed_data", "hash_counts.csv"))[,-1]
 
-body <- dashboardBody(
-  fluidRow(
-    box(
-      plotOutput("barplot"),
-      wordcloud2Output("wordcloud")
+body <- fluidPage(
+  
+    h1("Word Cloud on the Hashtags of the Tweets related to COVID-19 & Asian|Chinese|Wuhan"),
+  
+    h4(tags$a(href = "https://jaeyk.github.io/", "Developer: Jae Yeon Kim")),
+            
+    mainPanel(
+          
+          wordcloud2Output("cloud"),
+        
+        )
+    
     )
-  )
-)
-
+  
 server <- function(input, output) {
-  output$wordcloud <- renderWordcloud2({ wordcloud2(data) })
-  output$barplot <- renderPlot({ barplot(df$n, names.arg = df$hashtags) })
-}
+  
+  output$cloud <- renderWordcloud2({ 
+    
+    wordcloud2(df, 
+               size = 2.5, 
+               color = "random-dark") 
+    
+    })
 
-shinyApp(dashboardPage(dashboardHeader(), dashboardSidebar(), body), server)
+  }
+
+shinyApp(ui = ui, server = server)
