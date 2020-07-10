@@ -10,7 +10,7 @@ keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 my_corpus <- read_rds(here("outputs", "my_corpus.rds"))
 
 # Keywords 
-keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
+keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"))
 
 # Run dynamic topic model 
 future::plan("multiprocess")

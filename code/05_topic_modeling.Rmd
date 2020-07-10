@@ -151,7 +151,7 @@ keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 
 ```{r}
 # Keywords 
-keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
+keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"))
 ```
 
 
@@ -160,6 +160,7 @@ keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "w
 ```{r}
 key_viz <- visualize_keywords(docs = keyATM_docs, 
                               keywords = keywords)
+
 save_fig(key_viz, here("outputs", "keyword.png")) 
 
 vf <- values_fig(key_viz) 
@@ -202,7 +203,7 @@ base_out <- keyATM(docs = keyATM_docs,    # text input
 
 write_rds(base_out, here("outputs", "base_out.rds"))
 
-base_out <- read_rds(here("outputs", "base_out.rds"))
+#base_out <- read_rds(here("outputs", "base_out.rds"))
 
 out <- keyATM(docs = keyATM_docs,       # text input
               no_keyword_topics = 2,    # number of topics without keywords
@@ -212,7 +213,7 @@ out <- keyATM(docs = keyATM_docs,       # text input
 
 write_rds(out, here("outputs", "keyATM_out.rds"))
 
-out <- read_rds(here("outputs", "keyATM_out.rds"))
+#out <- read_rds(here("outputs", "keyATM_out.rds"))
 
 out$topic_counts
 
@@ -235,8 +236,9 @@ t1 <- topic_out_optimized %>%
     geom_col(position = "dodge") +
     scale_y_continuous(labels =    
     scales::percent_format(accuracy = 1)) +
-    labs(x = "Names", y = "Proportion", 
-          title = "Topic distributions (optimized)",
+    labs(x = "Topic names", 
+         y = "Topic proportions",          
+         title = "Topic distributions (optimized)",
           subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
 
 t2 <- topic_out_base %>% 
@@ -244,34 +246,13 @@ t2 <- topic_out_base %>%
     geom_col(position = "dodge") +
     scale_y_continuous(labels =    
     scales::percent_format(accuracy = 1)) +
-    labs(x = "Names", y = "Proportion", 
-          title = "Topic distributions (base)",
-          subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
+    labs(x = "Topic names", 
+         y = "Topic proportions", 
+         title = "Topic distributions (base)",
+         subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
 
 t1 / t2 
 
 ggsave(here("outputs", "topic_modeling_base.png"), height = 10)
     
-```
-
-## Dynamic model
-
-```{r}
-future::plan("multiprocess")
-
-dynamic_out <- keyATM(docs = keyATM_docs,    # text input
-              no_keyword_topics = 2,              # number of topics without keywords
-              keywords = keywords,       # keywords
-              model = "dynamic",         # select the model
-              model_settings = list(time_index = docvars(my_corpus)$month,
-                                    num_states = 5),
-              options = list(seed = 250, store_theta = TRUE, thinning = 5))
- 
-write_rds(dynamic_out, here("outputs", "dynamic_out.rds"))
-
-fig_timetrend <- plot_timetrend(dynamic_out, time_index_label = docvars(my_corpus)$month, xlab = "Month")
-
-fig_timetrend
-
-ggsave(here("outputs", "dynamic_topic.png"))
 ```
