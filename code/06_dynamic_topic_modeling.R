@@ -10,7 +10,7 @@ keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 my_corpus <- read_rds(here("outputs", "my_corpus.rds"))
 
 # Keywords 
-keywords <- list(anti_chinese = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
+keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
 
 # Run dynamic topic model 
 future::plan("multiprocess")
@@ -27,13 +27,13 @@ tictoc::toc()
 # Save 
 write_rds(dynamic_out_day, here("outputs", "dynamic_out_day.rds"))
 
-dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
+#dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
 
 # Visualize 
-fig_timetrend_day <- plot_timetrend(dynamic_out_day, time_index_label = docvars(my_corpus)$index, xlab = "Date")
+fig_timetrend_day <- plot_timetrend(dynamic_out_day, time_index_label = as.Date(docvars(my_corpus)$date), xlab = "Date", width = 5) 
 
 # Export 
 
 fig_timetrend_day
 
-ggsave(fig_timetrend_day, here("outputs", "dynamic_topic_day.png"))
+keyATM::save_fig(fig_timetrend_day, here("outputs", "dynamic_topic_day.png"))

@@ -88,6 +88,7 @@ docvars(my_corpus,
 # Date into index 
 
 docvars(my_corpus) <- date2index(my_corpus)
+
 write_rds(my_corpus, here("outputs", "my_corpus.rds"))
 
 ```
@@ -150,7 +151,7 @@ keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 
 ```{r}
 # Keywords 
-keywords <- list(anti_chinese = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
+keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
 ```
 
 
@@ -274,5 +275,3 @@ fig_timetrend
 
 ggsave(here("outputs", "dynamic_topic.png"))
 ```
-
-
