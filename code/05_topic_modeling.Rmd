@@ -75,44 +75,19 @@ docvars(my_corpus,
 docvars(my_corpus, 
 "trump") <- small_df$trump %>% as.factor()
 
+# Date 
+
 docvars(my_corpus, 
 "date") <- small_df$date
+
+# Month 
 
 docvars(my_corpus, 
 "month") <- lubridate::month(small_df$date)
 
-```
+# Date into index 
 
-```{r}
-# Time index  
-
-# Convert date into integer 
-index <- as.integer(gsub("-", "", docvars(my_corpus)$date))
-
-# Replace elements in the numeric vector with the new list of the character vector 
-
-char_index <- as.character(index)
-
-# Condition 
-given <- sort(unique(index)) %>% as.character()
-
-# For loop 
-for (i in seq(1:length(unique(index)))){
-  
-    char_index[char_index == given[i]] = paste(i)
-
-    message(paste("replaced", i))
-
-}
-
-# Check 
-unique(char_index) %>% as.numeric() %>% sort()
-
-docvars(my_corpus, "index") <- char_index %>% as.integer()
-
-docvars(my_corpus) <- docvars(my_corpus) %>%
-  arrange(index)
-
+docvars(my_corpus) <- date2index(my_corpus)
 write_rds(my_corpus, here("outputs", "my_corpus.rds"))
 
 ```
