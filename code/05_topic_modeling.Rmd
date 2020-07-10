@@ -20,13 +20,18 @@ pacman::p_load(tidyverse, # for tidyverse
                fastDummies, # to create dummy variables fast
                readtext, # for reading text
                quanteda, # for text preprocessing 
-               data.table) # for fast data manipulation
+               data.table, # for fast data manipulation
+               stm, # for structural topic modeling
+               future, # for parallel and distributed computing      
+               purrr, # for functional programming 
+               keyATM) # keyATM
 
 # for publication-friendly theme 
 theme_set(theme_pubr())
 
 # custom functions
 source(here("functions", "stacked_bar_plot.R"))
+source(here("functions", "visualize_diag.R"))
 
 # For keyword based topic modeling (development version)
 devtools::install_github("keyATM/keyATM", ref = "package_dev")
@@ -75,6 +80,34 @@ docvars(my_corpus,
 
 docvars(my_corpus, 
 "month") <- lubridate::month(small_df$date)
+
+# Time index  
+
+# Convert date into integer 
+index <- as.integer(gsub("-", "", docvars(my_corpus)$date))
+
+# Replace elements in the numeric vector with the new list of the character vector 
+
+char_index <- as.character(index)
+
+# Condition 
+given <- sort(unique(char_index))
+
+# For loop 
+for (i in seq(1:length(unique(index)))){
+  
+    char_index[char_index == given[i]] = paste(i)
+
+    message(paste("replaced", i))
+
+}
+
+# Check 
+unique(char_index) %>% as.numeric() %>% sort()
+
+docvars(my_corpus, "index") <- char_index %>% as.integer()
+
+write_rds(my_corpus, here("outputs", "my_corpus.rds"))
 
 ```
 
@@ -184,6 +217,8 @@ base_out <- keyATM(docs = keyATM_docs,    # text input
 
 write_rds(base_out, here("outputs", "base_out.rds"))
 
+base_out <- read_rds(here("outputs", "base_out.rds"))
+
 out <- keyATM(docs = keyATM_docs,       # text input
               no_keyword_topics = 2,    # number of topics without keywords
               keywords = keywords,      # keywords
@@ -191,6 +226,8 @@ out <- keyATM(docs = keyATM_docs,       # text input
               options = list(seed = 250))
 
 write_rds(out, here("outputs", "keyATM_out.rds"))
+
+out <- read_rds(here("outputs", "keyATM_out.rds"))
 
 out$topic_counts
 
@@ -228,7 +265,7 @@ t2 <- topic_out_base %>%
 
 t1 / t2 
 
-ggsave(here("outputs", "topic_modeling_base.png"))
+ggsave(here("outputs", "topic_modeling_base.png"), height = 10)
     
 ```
 
@@ -243,14 +280,15 @@ dynamic_out <- keyATM(docs = keyATM_docs,    # text input
               model = "dynamic",         # select the model
               model_settings = list(time_index = docvars(my_corpus)$month,
                                     num_states = 5),
-              options = list(seed = 250,
-                             store_theta = TRUE,
-                             thinning = 5))
+              options = list(seed = 250, store_theta = TRUE, thinning = 5))
  
 write_rds(dynamic_out, here("outputs", "dynamic_out.rds"))
 
-fig_timetrend <- plot_timetrend(dynamic_out, time_index_label = docvars(my_corpus)$month, xlab = "Month", width = 5)
+fig_timetrend <- plot_timetrend(dynamic_out, time_index_label = docvars(my_corpus)$month, xlab = "Month")
 
-dynamic_out
+fig_timetrend
 
+ggsave(here("outputs", "dynamic_topic.png"))
 ```
+
+

@@ -86,7 +86,7 @@ df <- df %>%
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
            asian = as.numeric(str_detect(full_text, "asia|asian")),
            chinese = as.numeric(str_detect(full_text, "china|chinese")),
-           anti_asian = as.numeric(str_detect(full_text, "wuhanvirus|chinesevirus|chinavirus|wuhancoronavirus|wuhanpneumonia")))
+           trump = as.numeric(str_detect(full_text, "trump")))
 ```
 
 ### Date
@@ -97,8 +97,11 @@ df <- tidytweetjson::add_date(df)
 ```
 
 ```{r}
+
 fwrite(df, here("processed_data", "US_tweets.csv"))
+
 df <- fread(here("processed_data", "US_tweets.csv"))
+
 ```
 
 # Explore 
@@ -109,7 +112,9 @@ df <- fread(here("processed_data", "US_tweets.csv"))
 
 ```{r}
 # Google 
+
 gtrends <- read_csv(here("processed_data", "gtrends.csv"))
+
 gtrends_plot <- gtrends %>%
     rename(Terms = keywords) %>%
     ggplot(aes(x = as.Date(date), y = log(hits),
@@ -126,10 +131,11 @@ gtrends_plot <- gtrends %>%
 ```{r}
 # Twitter 
 ## Group by date then visualize 
+
 twitter <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"), 
           mutate(add_normalized(df, chinese), Terms = "Chinese"),
           mutate(add_normalized(df, wuhan), Terms = "Wuhan"),
-          mutate(add_normalized(df, anti_asian), Terms = "Anti-Asian")
+          mutate(add_normalized(df, trump), Terms = "Trump")
           )
              
 twitter_plot <- twitter %>%
@@ -154,31 +160,37 @@ ggsave(here("outputs", "overall_trend.png"), height = 10)
 
 ```{r}
 # df <- data.table::fread(here("processed_data", "text_ready.csv"))
+
 p1 <- stacked_area_plot(df, wuhan) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Wuhan",
              title = "Wuhan",
              subtitle = "Tweets created by the users located in the US")
+
 p2 <- stacked_area_plot(df, chinese) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Chinese",
              title = "Chinese",
              subtitle = "Tweets created by the users located in the US")
+
 p3 <- stacked_area_plot(df, asian) +
         labs(x = "Date",
              y = "Proportion",
              fill = "Asian",
              title = "Asian",
              subtitle = "Tweets created by the users located in the US")
-p4 <- stacked_area_plot(df, anti_asian) +
+
+p4 <- stacked_area_plot(df, trump) +
         labs(x = "Date",
              y = "Proportion",
-             fill = "Anti-Asian",
-             title = "Anti-Asian",
+             fill = "Trump",
+             title = "Trump",
              subtitle = "Tweets created by the users located in the US")
+
 (p1 + p2) / (p3 + p4)
+
 ggsave(here("outputs", "stacked_bar_plots.png"),
        height = 10, width = 12)
 ```
