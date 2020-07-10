@@ -40,12 +40,16 @@ library(keyATM)
 
 ```{r}
 
+# Subset 
 df <- data.table::fread(here("processed_data", "cleaned_data.csv"))[,-1] 
 
 small_df <- df %>% filter(chinese == 1 | wuhan == 1 | asian == 1)
 
 1 - nrow(small_df)/nrow(df)
 
+# Filter (doc length 0 ones)
+
+small_df <- small_df[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89443, 102349, 110336, 120622, 121199, 122278, 122673, 125622, 133019),]
 ```
 
 # Preprocess 
@@ -64,13 +68,24 @@ docvars(my_corpus,
 "chinese") <- small_df$chinese
 
 docvars(my_corpus, 
-"trump") <- small_df$trump
+"trump") <- small_df$trump %>% as.factor()
 
 docvars(my_corpus, 
 "date") <- small_df$date
 
 # Check the document-level covariates 
 head(docvars(my_corpus))
+
+# Time index  
+
+index <- as.integer(gsub("-", "", docvars(my_corpus)$date))
+
+docvars(my_corpus, "index") <- c(index - min(index) + 1)
+
+# Trump intervention
+
+docvars(my_corpus, 
+"trump_speech") <- ifelse(index >= 20200316, 1, 0) %>% as.factor()
 
 ```
 
@@ -95,12 +110,6 @@ data_dfm <- dfm(data_tokens) %>%
 
 ```
 
-```{r}
-# Remove length 0 documents 
-data_dfm_fixed <- data_dfm[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89443, 102349, 110336, 120622, 121199, 122278, 122673, 125622, 133019),]
-
-```
-
 
 ```{r}
 # write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
@@ -118,90 +127,150 @@ data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
 future::plan("multiprocess")
 
 tictoc::tic()
-keyATM_docs <- keyATM_read(texts = data_dfm_fixed)
+keyATM_docs <- keyATM_read(texts = data_dfm)
 tictoc::toc()
 
-# 210.485 sec elapsed
+# 239.947 sec elapsed
 
 ```
 
 ```{r}
 
 # Export 
-# write_rds(keyATM_docs, here("processed_data", 
-#                            "keyATM_docs.rds"))
+write_rds(keyATM_docs, here("processed_data", 
+                            "keyATM_docs.rds"))
 
 keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 ```
-
 ## Create a dictionary of the key words 
 
 ```{r}
-
 # Keywords 
-
 keywords <- list(anti_chinese = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia"))
-
 ```
 
 
 ## Check keywords 
 
 ```{r}
-
 key_viz <- visualize_keywords(docs = keyATM_docs, 
                               keywords = keywords)
-
 save_fig(key_viz, here("outputs", "keyword.png")) 
-
 vf <- values_fig(key_viz) 
-
 ```
-## Base model 
+
+## Number of K
 
 ```{r}
-out <- keyATM(docs = keyATM_docs,    # text input
-              no_keyword_topics = 1,              # number of topics without keywords
-              keywords = keywords,       # keywords
-              model = "base",         # select the model
+# Run many models 
+many_models <- tibble(K = c(2:5)) %>%
+               mutate(topic_model = furrr::future_map(K, ~stm(data_dfm, 
+                                                       K = .,
+                                                       verbose = TRUE)))
+
+write_rds(many_models, here("outputs", "many_models.rds"))
+
+many_models <- read_rds(here("outputs", "many_models.rds"))
+
+# Resolve conflicts 
+
+
+conflicted::conflict_prefer("purrr", "map")
+
+k_search_diag <- visualize_diag(data_dfm, many_models)
+ggsave(here("outputs", "k_search_diag.png"))
+```
+
+## Base and optimized model 
+
+```{r}
+future::plan("multiprocess")
+
+base_out <- keyATM(docs = keyATM_docs,    # text input
+              no_keyword_topics = 1,      # number of topics without keywords
+              keywords = keywords,        # keywords
+              model = "base",             # select the model
+              options = list(seed = 250))
+
+write_rds(base_out, here("outputs", "base_out.rds"))
+
+out <- keyATM(docs = keyATM_docs,       # text input
+              no_keyword_topics = 2,    # number of topics without keywords
+              keywords = keywords,      # keywords
+              model = "base",           # select the model
               options = list(seed = 250))
 
 write_rds(out, here("outputs", "keyATM_out.rds"))
 
+out$topic_counts
+
+base_out$topic_counts
 ```
 
 ```{r}
+topic_out_optimized <- tibble(topic_counts = out$topic_counts,
+                    names = c("Anti-Asian", "Other1", "Other2")) %>%  
+           mutate(prop = topic_counts / sum(topic_counts),
+           prop = round(prop,2))
 
-# Check the tod words 
-top_words(out) 
+topic_out_base <- tibble(topic_counts = base_out$topic_counts,
+                    names = c("Anti-Asian", "Others")) %>%
+           mutate(prop = topic_counts / sum(topic_counts),
+           prop = round(prop,2))
 
-```
-
-```{r}
-
-topic_out <- tibble(topic_counts = out$topic_counts,
-                    names = c("Anti-Asian", "Others"))
-
-topic_out %>% 
-    mutate(prop = topic_counts / sum(topic_counts),
-           prop = round(prop,2)) %>%
+t1 <- topic_out_optimized %>% 
     ggplot(aes(x = names, y = prop)) +
-    geom_col() +
+    geom_col(position = "dodge") +
     scale_y_continuous(labels =    
     scales::percent_format(accuracy = 1)) +
     labs(x = "Names", y = "Proportion", 
-          title = "Topic distributions",
+          title = "Topic distributions (optimized)",
           subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
+
+t2 <- topic_out_base %>% 
+    ggplot(aes(x = names, y = prop)) +
+    geom_col(position = "dodge") +
+    scale_y_continuous(labels =    
+    scales::percent_format(accuracy = 1)) +
+    labs(x = "Names", y = "Proportion", 
+          title = "Topic distributions (base)",
+          subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
+
+t1 / t2 
 
 ggsave(here("outputs", "topic_modeling_base.png"))
     
 ```
 
-## Dynamic model
+## Covariate model 
 
 ```{r}
 
-test <- data_dfm_fixed %>% as_tibble() %>% head()
+docvars(my_corpus) %>% select(trump, trump_speech) -> vars_selected
+
+covariate_out <- keyATM(docs = keyATM_docs,
+              no_keyword_topics = 2,
+              keywords = keywords,
+              model = "covariates",
+              model_settings = list(covariates_data    = vars_selected,
+                                   covariates_formula = ~ trump + trump_speech),
+              options = list(seed = 250))
+
+write_rds(covariate_out, here("outputs", "covariate_out.rds"))
 
 ```
 
+## Dynamic model
+
+```{r}
+future::plan("multiprocess")
+dynamic_out <- keyATM(docs = keyATM_docs,    # text input
+              no_keyword_topics = 2,              # number of topics without keywords
+              keywords = keywords,       # keywords
+              model = "dynamic",         # select the model
+              model_settings = list(time_index = docvars(my_corpus)$index,
+                                    num_states = 5),
+              options = list(seed = 250))
+ 
+write_rds(dynamic_out, here("outputs", "dynamic_out.rds"))
+```
