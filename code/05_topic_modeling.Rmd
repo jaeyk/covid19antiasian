@@ -73,19 +73,8 @@ docvars(my_corpus,
 docvars(my_corpus, 
 "date") <- small_df$date
 
-# Check the document-level covariates 
-head(docvars(my_corpus))
-
-# Time index  
-
-index <- as.integer(gsub("-", "", docvars(my_corpus)$date))
-
-docvars(my_corpus, "index") <- c(index - min(index) + 1)
-
-# Trump intervention
-
 docvars(my_corpus, 
-"trump_speech") <- ifelse(index >= 20200316, 1, 0) %>% as.factor()
+"month") <- lubridate::month(small_df$date)
 
 ```
 
@@ -141,6 +130,7 @@ write_rds(keyATM_docs, here("processed_data",
                             "keyATM_docs.rds"))
 
 keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
+
 ```
 ## Create a dictionary of the key words 
 
@@ -242,35 +232,25 @@ ggsave(here("outputs", "topic_modeling_base.png"))
     
 ```
 
-## Covariate model 
-
-```{r}
-
-docvars(my_corpus) %>% select(trump, trump_speech) -> vars_selected
-
-covariate_out <- keyATM(docs = keyATM_docs,
-              no_keyword_topics = 2,
-              keywords = keywords,
-              model = "covariates",
-              model_settings = list(covariates_data    = vars_selected,
-                                   covariates_formula = ~ trump + trump_speech),
-              options = list(seed = 250))
-
-write_rds(covariate_out, here("outputs", "covariate_out.rds"))
-
-```
-
 ## Dynamic model
 
 ```{r}
 future::plan("multiprocess")
+
 dynamic_out <- keyATM(docs = keyATM_docs,    # text input
               no_keyword_topics = 2,              # number of topics without keywords
               keywords = keywords,       # keywords
               model = "dynamic",         # select the model
-              model_settings = list(time_index = docvars(my_corpus)$index,
+              model_settings = list(time_index = docvars(my_corpus)$month,
                                     num_states = 5),
-              options = list(seed = 250))
+              options = list(seed = 250,
+                             store_theta = TRUE,
+                             thinning = 5))
  
 write_rds(dynamic_out, here("outputs", "dynamic_out.rds"))
+
+fig_timetrend <- plot_timetrend(dynamic_out, time_index_label = docvars(my_corpus)$month, xlab = "Month", width = 5)
+
+dynamic_out
+
 ```
