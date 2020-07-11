@@ -1,4 +1,4 @@
-# hateasiancovid
+# Twitter Analysis on COVID-19 and Anti-Asian Climate
 Investigation the relationship between COVID-19 and the Anti-Asian Climate
 
 ## Workflow

@@ -120,12 +120,14 @@ gtrends_plot <- gtrends %>%
     ggplot(aes(x = as.Date(date), y = log(hits),
                col = Terms,
                linetype = Terms)) +
-        geom_line(size = 1) +
+        geom_line(size = 2) +
         labs(x = "Date",
              y = "Logged count",
              title = "Google Searches on COVID-19 (In the US)",
              subtitle = "Normalized to a 0-100 range") +
-        geom_vline(xintercept = as.Date(c("2020-03-16")))
+        geom_vline(xintercept = as.Date(c("2020-03-16")),
+               linetype = "dashed",
+               size = 2)
 ```
 
 ```{r}
@@ -142,12 +144,14 @@ twitter_plot <- twitter %>%
     ggplot(aes(x = as.Date(date), y = log(rescaled),
                col = Terms, 
                linetype = Terms)) +
-        geom_line(size = 1) +
+        geom_line(size = 2) +
         labs(x = "Date",
              y = "Logged count",
              title = "Tweets on COVID-19 (in the US)",
              subtitle = "Normalized to a 0-100 range") +
-             geom_vline(xintercept = as.Date(c("2020-03-16")))
+             geom_vline(xintercept = as.Date(c("2020-03-16")),
+               linetype = "dashed",
+               size = 2)
       
 ```
 
