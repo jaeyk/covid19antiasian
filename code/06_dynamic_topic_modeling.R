@@ -49,7 +49,7 @@ df <- data.frame(date = fig_timetrend_day$values$time_index,
 
 df %>% ggplot() +
     geom_line(aes(x = date, y = mean),
-              alpha = 0.9, size = 1.5) +
+              alpha = 0.5, size = 1.2) +
     geom_ribbon(aes(x = date, y = mean, ymax = upper, ymin = lower),
                 alpha = 0.3) +
     geom_smooth(aes(x = date, y = mean, ymax = upper, ymin = lower),
@@ -57,9 +57,7 @@ df %>% ggplot() +
     labs(title = "The time trend of Anti-Asian topic",
          subtitle = "Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan",
          x = "Date", 
-         y = TeX(paste("Mean of", "$\\theta$", sep = " "))) +
-    geom_vline(xintercept = as.Date(c("2020-03-16")), 
-               linetype = "dashed", size = 1.5)
+         y = TeX(paste("Mean of", "$\\theta$", sep = " ")))
 
 ggsave(here("outputs", "anti_asian_topic_dynamic_trend.png"))
     

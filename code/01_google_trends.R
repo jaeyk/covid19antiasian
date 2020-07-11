@@ -24,9 +24,7 @@ search_gtrends <- function(terms){
  
 ## Search and bind 
 
-gtrends <- bind_rows(search_gtrends("Coronavirus"),
-                    search_gtrends("COVID-19"),
-                    search_gtrends("Chinese virus"),
+gtrends <- bind_rows(search_gtrends("Chinese virus"),
                     search_gtrends("Chinese flu"),
                     search_gtrends("Wuhan virus"),
                     search_gtrends("Kung Flu")) %>%

@@ -86,7 +86,12 @@ df <- df %>%
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
            asian = as.numeric(str_detect(full_text, "asia|asian")),
            chinese = as.numeric(str_detect(full_text, "china|chinese")),
-           trump = as.numeric(str_detect(full_text, "trump")))
+           trump = as.numeric(str_detect(full_text, "trump")),
+           chinese_virus = as.numeric(str_detect(full_text, "chinese flu|chineseflu|chinese virus|chinesevirus")),
+           kung_flu = as.numeric(str_detect(full_text, "kung flu|kungflu")), 
+           wuhan_virus = as.numeric(str_detect(full_text, "wuhan virus|wuhanvirus"))
+           )
+           
 ```
 
 ### Date
@@ -115,49 +120,56 @@ df <- fread(here("processed_data", "US_tweets.csv"))
 
 gtrends <- read_csv(here("processed_data", "gtrends.csv"))
 
+gtrends <- gtrends %>% filter(keywords == "Chinese virus" |
+                   keywords == "Chinese flu" | 
+                   keywords == "Kung Flu" |
+                   keywords == "Wuhan virus") %>%
+    mutate(keywords = recode(keywords, 
+                             "Kung Flu" = "Kung flu"))
+
 gtrends_plot <- gtrends %>%
     rename(Terms = keywords) %>%
-    ggplot(aes(x = as.Date(date), y = log(hits),
-               col = Terms,
-               linetype = Terms)) +
-        geom_line(size = 2) +
+    ggplot(aes(x = as.Date(date), y = hits)) +
+        geom_line(size = 1.2) +
         labs(x = "Date",
-             y = "Logged count",
+             y = "Count",
              title = "Google Searches on COVID-19 (In the US)",
              subtitle = "Normalized to a 0-100 range") +
         geom_vline(xintercept = as.Date(c("2020-03-16")),
                linetype = "dashed",
-               size = 2)
+               size = 1.2,
+               color = "blue") +
+        facet_wrap(~Terms)
 ```
 
 ```{r}
 # Twitter 
 ## Group by date then visualize 
 
-twitter <- bind_rows(mutate(add_normalized(df, asian), Terms = "Asian"), 
-          mutate(add_normalized(df, chinese), Terms = "Chinese"),
-          mutate(add_normalized(df, wuhan), Terms = "Wuhan"),
-          mutate(add_normalized(df, trump), Terms = "Trump")
-          )
+twitter <- bind_rows(
+    mutate(add_normalized(df, chinese_virus), Terms = "Chinese virus"),
+    mutate(add_normalized(df, kung_flu), Terms = "Kung flu"),
+    mutate(add_normalized(df, wuhan_virus), Terms = "Wuhan virus")
+)
              
 twitter_plot <- twitter %>%
-    ggplot(aes(x = as.Date(date), y = log(rescaled),
-               col = Terms, 
-               linetype = Terms)) +
-        geom_line(size = 2) +
+    ggplot(aes(x = as.Date(date), y = rescaled)) +
+        geom_line(size = 1.2) +
         labs(x = "Date",
-             y = "Logged count",
+             y = "Count",
              title = "Tweets on COVID-19 (in the US)",
              subtitle = "Normalized to a 0-100 range") +
-             geom_vline(xintercept = as.Date(c("2020-03-16")),
+        geom_vline(xintercept = as.Date(c("2020-03-16")),
                linetype = "dashed",
-               size = 2)
-      
+               size = 1.2,
+               color = "blue") +
+        facet_wrap(~Terms)
+  
 ```
 
 ```{r}
 gtrends_plot / twitter_plot 
-ggsave(here("outputs", "overall_trend.png"), height = 10)
+ggsave(here("outputs", "overall_trend.png"), height = 10, width = 10)
 ```
 
 ### Keywords 
@@ -186,19 +198,34 @@ p3 <- stacked_area_plot(df, asian) +
              title = "Asian",
              subtitle = "Tweets created by the users located in the US")
 
-p4 <- stacked_area_plot(df, trump) +
+p4 <- stacked_area_plot(df, chinese_virus) +
         labs(x = "Date",
              y = "Proportion",
-             fill = "Trump",
-             title = "Trump",
+             fill = "Chinese virus",
+             title = "Chinese virus",
              subtitle = "Tweets created by the users located in the US")
 
-(p1 + p2) / (p3 + p4)
+p5 <- stacked_area_plot(df, kung_flu) +
+        labs(x = "Date",
+             y = "Proportion",
+             fill = "Kung flu",
+             title = "Kung flu",
+             subtitle = "Tweets created by the users located in the US")
 
-ggsave(here("outputs", "stacked_bar_plots.png"),
-       height = 10, width = 12)
+p6 <- stacked_area_plot(df, wuhan_virus) +
+        labs(x = "Date",
+             y = "Proportion",
+             fill = "Wuhan virus",
+             title = "Wuhan virus",
+             subtitle = "Tweets created by the users located in the US")
+
+(p1 + p2 + p3) / (p4 + p5 + p6)
+
+ggsave(here("outputs", "stacked_bar_plots2.png"),
+       height = 10,
+       width = 15)
+       
 ```
-
 # Export 
 
 ```{r}
