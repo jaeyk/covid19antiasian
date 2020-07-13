@@ -7,6 +7,11 @@ The objective of this article is to document the data collection, analysis, and 
 
 I welcome any suggestions, comments, or questions. Feel free to create issues in this Git repository or send an email to [jaeyeonkim@edu](maito:jaeyeonkim@edu.).
 
+## Key questions
+
+1. To what extent has anti-Asian public sentiment increased since the outbreak of COVID-19?
+2. What has contributed to the rise of anti-Asian public sentiment? Specifically, has president Trump's exclusionary speeches (e.g., Chinese virus, kung flu) contributed to it?
+
 ## Data collection
 
 ## Descriptive analysis
