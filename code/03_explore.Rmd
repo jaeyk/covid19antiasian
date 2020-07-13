@@ -138,14 +138,18 @@ df <- fread(here("processed_data", "US_tweets.csv"))
 
 gtrends <- read_csv(here("processed_data", "gtrends.csv"))
 
-gtrends <- gtrends %>% dplyr::filter(keywords == "Chinese virus" |
+gtrends <- gtrends %>% dplyr::filter(keywords == "Racism" |
                    keywords == "Chinese flu" | 
                    keywords == "Kung Flu" |
                    keywords == "Wuhan virus") %>%
     mutate(keywords = dplyr::recode(keywords, 
-                             "Kung Flu" = "Kung flu")) %>%
+                             "Kung Flu" = "Kung flu",
+                             "Racism" = "Anti-racism")) %>%
     dplyr::rename(Terms = keywords)
- 
+    
+```
+
+```{r}
 # Static version
 gtrends_plot <- gtrends %>%
     ggplot(aes(x = as.Date(date), y = hits)) +
@@ -240,8 +244,11 @@ anim_save(here("outputs", "animated_twitter_plot.gif"))
 ```
 
 ```{r}
+
 gtrends_plot / twitter_plot 
+
 ggsave(here("outputs", "overall_trend.png"), height = 10, width = 10)
+
 ```
 
 ### Keywords 

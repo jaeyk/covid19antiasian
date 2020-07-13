@@ -24,7 +24,7 @@ search_gtrends <- function(terms){
  
 ## Search and bind 
 
-gtrends <- bind_rows(search_gtrends("Chinese virus"),
+gtrends <- bind_rows(search_gtrends("Racism"),
                     search_gtrends("Chinese flu"),
                     search_gtrends("Wuhan virus"),
                     search_gtrends("Kung Flu")) %>%
@@ -32,7 +32,3 @@ gtrends <- bind_rows(search_gtrends("Chinese virus"),
 
 ## Export
 write_csv(gtrends, here("processed_data", "gtrends.csv"))
-
-
-test <- search_gtrends("Coronavirus")
-
