@@ -39,13 +39,11 @@ Figure 2 demonstrates that to a large extent the Twitter and Google trends are i
 
 Figure 3. Broader Twitter trends in stacked line plots.
 
-The above keyword trend analysis is effective in examining how Trump's speech contributed to the rise of anti-Asian public sentiment. However, if we take a look at the proportions of the Tweets mentioned `Chinese virus`, `Kung flu`, `Wuhan virus` or anti-racism related words (see Figure 6), they were extremely marginal. By contrast, the proportions of the Tweets mentioned Wuhan, Chinese, or Asian were far larger. Therefore, if I trace the rise of anti-Asian sentiment in the social media exclusively focusing on these key word trends, the conclusion I draw from the data analysis could be strongly biased.
-
+The above keyword trend analysis is effective in examining how Trump's speech contributed to the rise of anti-Asian public sentiment. However, if we take a look at the proportions of the Tweets mentioned `Chinese virus`, `Kung flu`, `Wuhan virus` or anti-racism related words (see Figure 6), they were extremely marginal. By contrast, the proportions of the Tweets mentioned Asian, Chinese, or Wuhan were far larger. Therefore, if I trace the rise of anti-Asian sentiment in the social media exclusively focusing on these key word trends, the conclusion I draw from the data analysis could be strongly biased.
 
 ## Topic modeling [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd)]
 
-Therefore, I selected the
-
+However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted `Chinese flu` or `Kung flu`, it is relatively clear that there is a racial tone. However, if someone tweeted about COVID-19 and China, it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many and latent themes exist within these Tweets and they need to be distinguished. To cluster these tweets, I employed a machine learning technique, called topic modeling. Simply put, the clusters of the tweets related to these different themes based on how words in different tweets hang together. Within identical topics, the words should be similar (`semantic coherence`), Between different topics, the words should be different (`exclusion`). Using the `stm` package in R, I assumed that three would be the optimal number of topics in this case.  
 
 ### Hashtags (keywords)
 
