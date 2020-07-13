@@ -16,9 +16,10 @@ I welcome any suggestions, comments, or questions. Please feel free to create is
 
 1. The data source is [the large-scale COVID-19 Twitter chatter dataset (v.15)](https://zenodo.org/record/3902855#.XvZFBXVKhEZ) created by [Panacealab](http://www.panacealab.org/). The keywords used to search the tweets related to COVID-19 were `COVD19, CoronavirusPandemic, COVID-19, 2019nCoV, CoronaOutbreak,coronavirus , WuhanVirus, covid19, coronaviruspandemic, covid-19, 2019ncov, coronaoutbreak, wuhanvirus`. These tweets were created between January and June 2020. Of them, I used 59,650,755 tweets composed in English. I wrote a [shell script](https://github.com/jaeyk/covid19antiasian/blob/master/code/00_setup.sh) that automatically reruns this part of the data collection.
 
-2. The original dataset only provided Tweet IDs, not tweets, following the Twitter's [developer terms](https://developer.twitter.com/en/developer-terms/more-on-restricted-use-cases). I turned these Tweet IDs back into a JSON file (Tweets) using [Twarc](https://github.com/DocNow/twarc). This process is called hydrating and often very time-consuming. To ease the process, I randomly selected 10% of the Tweet IDs from the original dataset (N = 5,719,216) stratifying on the months in which the tweets were created. Even this sample dataset is larger than 5 gigabytes. I created an R package, called [tidytweetjson](https://github.com/jaeyk/tidytweetjson), that efficiently parses this large JSON file into a tidyverse-ready dataframe. The package also helps to turn the timestamp variable in the Tweet JSON file into a date variable and identifies the location indicated by the Twitter users is in the United States or not.
+2. The original dataset only provided Tweet IDs, not tweets, following the Twitter's [developer terms](https://developer.twitter.com/en/developer-terms/more-on-restricted-use-cases). I turned these Tweet IDs back into a JSON file (Tweets) using [Twarc](https://github.com/DocNow/twarc). This process is called hydrating and often very time-consuming. To ease the process, I randomly selected 10% of the Tweet IDs from the original dataset (N = 5,719,216) stratifying on the months in which the tweets were created. Even this sample dataset is larger than 5 gigabytes. I created an R package, called [tidytweetjson](https://github.com/jaeyk/tidytweetjson), that efficiently parses this large JSON file into a tidyverse-ready dataframe. The package also helps to turn the timestamp variable in the Tweet JSON file into a date variable and identifies the location indicated by the Twitter users is in the United States or not. Using this package, I identified and selected 1,394,468 tweets (37% of the sample dataset) created by the users located in the United States. This data is used for the further analysis.
 
-## Descriptive analysis
+
+## Descriptive analysis [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/03_explore.Rmd)]
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/animated_twitter_plot.gif)
 
@@ -32,7 +33,8 @@ Figure 2. Comparison between Google search and Twitter trends.
 
 Figure 3. Broader Twitter trends in stacked line plots.
 
-## Topic modeling
+
+## Topic modeling [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd)]
 
 ### Hashtags (keywords)
 
