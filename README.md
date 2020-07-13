@@ -11,7 +11,21 @@ I welcome any suggestions, comments, or questions. Feel free to create issues in
 
 ## Descriptive analysis
 
-![](https://github.com/jaeyk/covid19antiasian/raw/master/outputs/overall_trend.png)
+![](https://github.com/jaeyk/covid19antiasian/raw/master/outputs/animated_gtrends_plot.gif)
+
+Figure 1.
+
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/animated_twitter_plot.gif)
+
+Figure 2.
+
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/overall_trend.gif)
+
+Figure 3.
+
+![]
+
+Figure 4.
 
 ## Topic modeling
 
