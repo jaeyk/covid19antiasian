@@ -31,7 +31,7 @@ Figure 4. Broader Twitter trends in stacked line plots.
 
 ### Hashtags (keywords)
 
-![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hashtags.png)
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hash_cloud.png)
 
 Figure 5. Hashtags of the Tweets mentioned Asian, Chinese, or Wuhan
 
