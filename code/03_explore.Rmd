@@ -138,15 +138,13 @@ df <- fread(here("processed_data", "US_tweets.csv"))
 
 gtrends <- read_csv(here("processed_data", "gtrends.csv"))
 
-gtrends <- gtrends %>% dplyr::filter(keywords == "Racism" |
-                   keywords == "Chinese flu" | 
-                   keywords == "Kung Flu" |
-                   keywords == "Wuhan virus") %>%
+gtrends <- gtrends %>%
     mutate(keywords = dplyr::recode(keywords, 
                              "Kung Flu" = "Kung flu",
-                             "Racism" = "Anti-racism")) %>%
+                             "'Racism' + 'Antiasian' + 'Racist' + 'hate crime'" = "Anti-racism",
+                             "'Chinese flu' + 'Chinese virus'" = "Chinese flu")) %>%
     dplyr::rename(Terms = keywords)
-    
+
 ```
 
 ```{r}

@@ -31,7 +31,9 @@ COVID-19 has many names. COVID-19 or Coronavirus are epidemiological terms. Chin
 
 Figure 2. Comparison between Google search and Twitter trends.
 
-In Figure 2, I compare the Twitter trend (bottom panel) with the Google search trend (top panel).
+In Figure 2, I compare the Twitter trend (bottom panel) with the Google search trend (top panel). Twitter users do not represent the US population because people do not sign up Twitter randomly. Moreover, in this case, we are only analyzing a subset of the Twitter users tweeted about COVID-19. To address this concern about generalizability, I also traced similar trends using Google search API. (Thanks Tyler Reny for sharing his code used for [his co-authored PRI paper](https://www.tandfonline.com/doi/full/10.1080/21565503.2020.1769693) with Matt Barreto. I [modified](https://github.com/jaeyk/covid19antiasian/blob/master/code/01_google_trends.R) his code to query and save the Google API data.)
+
+Figure 2 demonstrates that to a large extent the Twitter and Google trends are in parallel: after Trump referred COVID-19 as Chinese flu, people paid attention to `Chinese flu` and `Kung flu` substantially. Wuhan virus was popular only at the outset. Anti-racism related words gained popularity during the Black Lives Matter movement.
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/stacked_bar_plots2.png)
 

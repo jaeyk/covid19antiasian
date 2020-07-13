@@ -24,8 +24,8 @@ search_gtrends <- function(terms){
  
 ## Search and bind 
 
-gtrends <- bind_rows(search_gtrends("Racism"),
-                    search_gtrends("Chinese flu"),
+gtrends <- bind_rows(search_gtrends("'Racism' + 'Antiasian' + 'Racist' + 'hate crime'"),
+                    search_gtrends("'Chinese flu' + 'Chinese virus'"),
                     search_gtrends("Wuhan virus"),
                     search_gtrends("Kung Flu")) %>%
            mutate(date = lubridate::ymd(date))
