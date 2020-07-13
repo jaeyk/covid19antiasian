@@ -94,6 +94,8 @@ docvars(my_corpus) <- date2index(my_corpus)
 
 write_rds(my_corpus, here("outputs", "my_corpus.rds"))
 
+my_corpus <- read_rds(here("outputs", "my_corpus.rds"))
+
 ```
 
 ```{r}
@@ -144,7 +146,7 @@ tictoc::toc()
 write_rds(keyATM_docs, here("processed_data", 
                             "keyATM_docs.rds"))
 
-# keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
+keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 
 ```
 
@@ -247,7 +249,7 @@ tictoc::toc()
 # Save 
 write_rds(dynamic_out_day, here("outputs", "dynamic_out_day.rds"))
 
-# dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
+dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
 
 # Visualize 
 fig_timetrend_day <- plot_timetrend(dynamic_out_day, time_index_label = as.Date(docvars(my_corpus)$date), xlab = "Date", width = 5) 
