@@ -1,11 +1,11 @@
 
 # Twitter Analysis on COVID-19 and Anti-Asian Climate
 
-This analysis traces how COVID-19 shaped anti-Asian climate drawing on more than 1 million US-located Tweets. The other part of the project is based on the multi-racial survey data. This is a joint work with Nathan Chan (UCI) and [Vivien Leung](https://sites.google.com/view/vivienleung/home) (UCLA). The paper version will be presented at the 2020 American Political Science Association annual meeting.
+This analysis traces how COVID-19 shaped anti-Asian climate drawing on more than 1 million US-located Tweets. The other part of the project is based on the multi-racial survey data. This is a joint work with Nathan Chan (UCI) and [Vivien Leung](https://sites.google.com/view/vivienleung/home) (UCLA). I am responsible for the social media data analysis. The paper version will be presented at the 2020 American Political Science Association annual meeting.
 
 The objective of this article is to document the data collection, analysis, and visualization process for my future self, co-authors, and other researchers. In the research process, I also developed an R package, called [tidytweetjson](https://github.com/jaeyk/tidytweetjson), that could be useful to social scientists interested in using social media data for their own research. The entire research process is computationally reproducible. I automated parts that could be automatable by writing functions and putting some of these functions as a package.
 
-I welcome any suggestions, comments, or questions. Feel free to create issues in this Git repository or send an email to [jaeyeonkim@edu](maito:jaeyeonkim@edu.).
+I welcome any suggestions, comments, or questions. Feel free to create issues in this Git repository or send an email to [jaeyeonkim@berkeley.edu](mailto:jaeyeonkim@berkeley.edu).
 
 ## Key questions
 
