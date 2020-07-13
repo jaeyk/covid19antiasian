@@ -24,7 +24,8 @@ pacman::p_load(tidyverse, # for tidyverse
                stm, # for structural topic modeling
                future, # for parallel and distributed computing      
                purrr, # for functional programming 
-               keyATM) # keyATM
+               keyATM, # keyATM
+               latex2exp)
 
 # for publication-friendly theme 
 theme_set(theme_pubr())
@@ -32,6 +33,7 @@ theme_set(theme_pubr())
 # custom functions
 source(here("functions", "stacked_bar_plot.R"))
 source(here("functions", "visualize_diag.R"))
+source(here("functions", "date2index.R"))
 
 # For keyword based topic modeling (development version)
 devtools::install_github("keyATM/keyATM", ref = "package_dev")
@@ -54,7 +56,8 @@ small_df <- df %>% filter(chinese == 1 | wuhan == 1 | asian == 1)
 
 # Filter (doc length 0 ones)
 
-small_df <- small_df[-c(2930, 25557, 33569, 49215, 49782, 51570, 71263, 89443, 102349, 110336, 120622, 121199, 122278, 122673, 125622, 133019),]
+small_df <- small_df[-c(2930, 25557, 33569, 49217, 49784, 51572, 71270, 89453, 90285, 102360, 108111, 110351, 113704, 116119, 120643, 121220, 122300, 122695, 125647, 133053),]
+
 ```
 
 # Preprocess 
@@ -99,7 +102,8 @@ data_tokens <- tokens(my_corpus,
                       remove_url = TRUE) %>%
     tokens_remove(c(stopwords("english"),
                                "may", "shall", "can",
-                               "must", "upon", "with", "without")) 
+                               "must", "upon", "with", "without",
+                               "covid", "covid19", "covid-19")) 
 
 ```
 
@@ -134,24 +138,25 @@ tictoc::tic()
 keyATM_docs <- keyATM_read(texts = data_dfm)
 tictoc::toc()
 
-# 248.628 sec elapsed
-
-```
-
-```{r}
+# 243.578 sec elapsed
 
 # Export 
 write_rds(keyATM_docs, here("processed_data", 
                             "keyATM_docs.rds"))
 
-keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
+# keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 
 ```
+
 ## Create a dictionary of the key words 
 
 ```{r}
 # Keywords 
-keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"))
+keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"),
+                 "Anti-racism" = c("antiracism", "stophate", "acttochange", "stopaapihate", "stophatecrimes", 
+                                   # Only these three worked 
+                                   "antiasian", "racism", "racist"))
+
 ```
 
 
@@ -188,71 +193,94 @@ conflicted::conflict_prefer("purrr", "map")
 
 k_search_diag <- visualize_diag(data_dfm, many_models)
 ggsave(here("outputs", "k_search_diag.png"))
+
 ```
 
-## Base and optimized model 
+## Static topic modeling 
 
 ```{r}
+
 future::plan("multiprocess")
 
-base_out <- keyATM(docs = keyATM_docs,    # text input
-              no_keyword_topics = 1,      # number of topics without keywords
-              keywords = keywords,        # keywords
-              model = "base",             # select the model
-              options = list(seed = 250))
-
-write_rds(base_out, here("outputs", "base_out.rds"))
-
-#base_out <- read_rds(here("outputs", "base_out.rds"))
-
 out <- keyATM(docs = keyATM_docs,       # text input
-              no_keyword_topics = 2,    # number of topics without keywords
+              no_keyword_topics = 1,    # number of topics without keywords
               keywords = keywords,      # keywords
               model = "base",           # select the model
               options = list(seed = 250))
 
 write_rds(out, here("outputs", "keyATM_out.rds"))
 
-#out <- read_rds(here("outputs", "keyATM_out.rds"))
+out <- read_rds(here("outputs", "keyATM_out.rds"))
 
-out$topic_counts
-
-base_out$topic_counts
-```
-
-```{r}
-topic_out_optimized <- tibble(topic_counts = out$topic_counts,
-                    names = c("Anti-Asian", "Other1", "Other2")) %>%  
+topic_out <- tibble(topic_counts = out$topic_counts,
+                    names = c("Anti-Asian", "Anti-racism","Others")) %>%  
            mutate(prop = topic_counts / sum(topic_counts),
            prop = round(prop,2))
 
-topic_out_base <- tibble(topic_counts = base_out$topic_counts,
-                    names = c("Anti-Asian", "Others")) %>%
-           mutate(prop = topic_counts / sum(topic_counts),
-           prop = round(prop,2))
-
-t1 <- topic_out_optimized %>% 
+topic_out %>% 
     ggplot(aes(x = names, y = prop)) +
     geom_col(position = "dodge") +
     scale_y_continuous(labels =    
     scales::percent_format(accuracy = 1)) +
     labs(x = "Topic names", 
          y = "Topic proportions",          
-         title = "Topic distributions (optimized)",
+         title = "Topic distributions",
           subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
 
-t2 <- topic_out_base %>% 
-    ggplot(aes(x = names, y = prop)) +
-    geom_col(position = "dodge") +
-    scale_y_continuous(labels =    
-    scales::percent_format(accuracy = 1)) +
-    labs(x = "Topic names", 
-         y = "Topic proportions", 
-         title = "Topic distributions (base)",
-         subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
-
-t1 / t2 
-
-ggsave(here("outputs", "topic_modeling_base.png"), height = 10)
+ggsave(here("outputs", "topic_modeling_static.png"), height = 5)
     
+```
+
+## Dynamic topic modeling 
+
+````{r}
+
+tictoc::tic()
+dynamic_out_day <- keyATM(docs = keyATM_docs,    # text input
+                      no_keyword_topics = 1,              # number of topics without keywords
+                      keywords = keywords,       # keywords
+                      model = "dynamic",         # select the model
+                      model_settings = list(time_index = docvars(my_corpus)$index,                                          num_states = 5),
+                      options = list(seed = 250, store_theta = TRUE, thinning = 5))
+tictoc::toc()
+
+# Save 
+write_rds(dynamic_out_day, here("outputs", "dynamic_out_day.rds"))
+
+# dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
+
+# Visualize 
+fig_timetrend_day <- plot_timetrend(dynamic_out_day, time_index_label = as.Date(docvars(my_corpus)$date), xlab = "Date", width = 5) 
+
+keyATM::save_fig(fig_timetrend_day, here("outputs", "dynamic_topic_day.png"))
+
+# Alt visualize 
+
+df <- data.frame(date = fig_timetrend_day$values$time_index,
+                mean = fig_timetrend_day$values$Point,
+                upper = fig_timetrend_day$values$Upper,
+                lower = fig_timetrend_day$values$Lower,
+                topic = fig_timetrend_day$values$Topic)
+
+df %>% ggplot() +
+    geom_line(aes(x = date, y = mean),
+              alpha = 0.5, size = 1.2) +
+    geom_ribbon(aes(x = date, y = mean, ymax = upper, ymin = lower),
+                alpha = 0.3) +
+    geom_smooth(aes(x = date, y = mean, ymax = upper, ymin = lower),
+                method = "loess", 
+                size = 1.5, 
+                span = 0.3) + # for given x, loess will use the 0.3 * N closet poitns to x to fit. source: https://rafalab.github.io/dsbook/smoothing.html
+    labs(title = "The time trend of Anti-Asian topic",
+         subtitle = "Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan",
+         x = "Date", 
+         y = TeX(paste("Mean of", "$\\theta$", sep = " "))) +
+    facet_wrap(~topic) +
+    geom_vline(xintercept = as.Date(c("2020-03-16")),
+               linetype = "dashed",
+               size = 1.2,
+               color = "black")
+
+ggsave(here("outputs", "anti_asian_topic_dynamic_trend.png"))
+
 ```

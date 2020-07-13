@@ -1,5 +1,6 @@
 # Twitter Analysis on COVID-19 and Anti-Asian Climate
-Investigation the relationship between COVID-19 and the Anti-Asian Climate
+
+This large-scale Twitter data analysis is part of the project that investigates the relationship between COVID-19 and anti-Asian climate. The other part of the project is based on the survey data. This is a joint work with Nathan Chan (UCI) and [Vivien Leung](https://sites.google.com/view/vivienleung/home) (UCLA). The paper version will be presented at the 2020 American Political Science Association annual meeting.
 
 ## Workflow
 1. Download and unzip [the large-scale COVID-19 Twitter chatter dataset](https://zenodo.org/record/3902855#.XvZFBXVKhEZ), created by [Panacealab](http://www.panacealab.org/) (v.15) and remove all extracted files except the English Twitter data (2.3 GB).

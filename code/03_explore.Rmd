@@ -21,16 +21,23 @@ pacman::p_load(data.table, # for fast data manipulation
                lubridate, # for easy time var manipulation
                forcats, # reverse factor order 
                patchwork, # for easy ggarrange
-               ggsci) # for pubs 
+               ggsci, # for pubs 
+               gganimate, # for animated data viz 
+               gifski) # for saving animated data viz objects 
+
 # devtools::install_github("jaeyk/tidytweetjson", force = TRUE)
 # devtools::install_github("jaeyk/makereproducible", force = TRUE)
+
 library(tidytweetjson)
 library(makereproducible)
+
 # for publication-friendly theme 
 theme_set(theme_pubr())
+
 # custom functions
 source(here("functions", "stacked_area_plot.R"))
 source(here("functions", "add_normalized.R"))
+
 ```
 
 ## Files 
@@ -84,14 +91,25 @@ df <- subset(df, US_location == 1)
 df <- df %>%
     mutate(full_text = str_to_lower(full_text),
            wuhan = as.numeric(str_detect(full_text, "wuhan")),
-           asian = as.numeric(str_detect(full_text, "asia|asian")),
+           asian = as.numeric(str_detect(full_text, "asia|asian|aapi")),
            chinese = as.numeric(str_detect(full_text, "china|chinese")),
            trump = as.numeric(str_detect(full_text, "trump")),
            chinese_virus = as.numeric(str_detect(full_text, "chinese flu|chineseflu|chinese virus|chinesevirus")),
            kung_flu = as.numeric(str_detect(full_text, "kung flu|kungflu")), 
-           wuhan_virus = as.numeric(str_detect(full_text, "wuhan virus|wuhanvirus"))
+           wuhan_virus = as.numeric(str_detect(full_text, "wuhan virus|wuhanvirus")),
+           anti_racism = as.numeric(str_detect(full_text, "antiracism|antiasian|stophate|acttochange|stopaapihate|stophatecrimes|racism|racist|hatecrime")),
+           racism = ifelse(chinese_virus == 1 | kung_flu == 1 | wuhan_virus == 1, 1, 0)
            )
-           
+
+df %>%
+    count(racism, anti_racism)
+
+# racism | anti_racism
+# 0	0	1377525		
+# 0	1	9799		
+# 1	0	6748		
+# 1	1	406	
+
 ```
 
 ### Date
@@ -120,15 +138,16 @@ df <- fread(here("processed_data", "US_tweets.csv"))
 
 gtrends <- read_csv(here("processed_data", "gtrends.csv"))
 
-gtrends <- gtrends %>% filter(keywords == "Chinese virus" |
+gtrends <- gtrends %>% dplyr::filter(keywords == "Chinese virus" |
                    keywords == "Chinese flu" | 
                    keywords == "Kung Flu" |
                    keywords == "Wuhan virus") %>%
-    mutate(keywords = recode(keywords, 
-                             "Kung Flu" = "Kung flu"))
-
+    mutate(keywords = dplyr::recode(keywords, 
+                             "Kung Flu" = "Kung flu")) %>%
+    dplyr::rename(Terms = keywords)
+ 
+# Static version
 gtrends_plot <- gtrends %>%
-    rename(Terms = keywords) %>%
     ggplot(aes(x = as.Date(date), y = hits)) +
         geom_line(size = 1.2) +
         labs(x = "Date",
@@ -140,6 +159,32 @@ gtrends_plot <- gtrends %>%
                size = 1.2,
                color = "blue") +
         facet_wrap(~Terms)
+
+# Animated version
+animated_gtrends_plot <- gtrends %>%
+    ggplot(aes(x = as.Date(date), y = hits)) +
+        geom_line(size = 1.2) +
+        labs(x = "Date",
+             y = "Count",
+             title = "Google Searches on COVID-19 (In the US)",
+             subtitle = "Normalized to a 0-100 range") +
+        geom_vline(xintercept = as.Date(c("2020-03-16")),
+             linetype = "dashed",
+             size = 1.2,
+             color = "blue") +
+        facet_wrap(~Terms) +
+        transition_reveal(as.Date(date))
+
+# Animate
+animate(animated_gtrends_plot, 
+        duration = 6, 
+        fps = 25, 
+        width = 600, 
+        height = 600, 
+        renderer = gifski_renderer())
+
+# Save
+anim_save(here("outputs", "animated_gtrends_plot.gif"))
 ```
 
 ```{r}
@@ -149,9 +194,11 @@ gtrends_plot <- gtrends %>%
 twitter <- bind_rows(
     mutate(add_normalized(df, chinese_virus), Terms = "Chinese virus"),
     mutate(add_normalized(df, kung_flu), Terms = "Kung flu"),
-    mutate(add_normalized(df, wuhan_virus), Terms = "Wuhan virus")
+    mutate(add_normalized(df, wuhan_virus), Terms = "Wuhan virus"),
+    mutate(add_normalized(df, anti_racism), Terms = "Anti-racism")
 )
              
+# Static version
 twitter_plot <- twitter %>%
     ggplot(aes(x = as.Date(date), y = rescaled)) +
         geom_line(size = 1.2) +
@@ -164,7 +211,32 @@ twitter_plot <- twitter %>%
                size = 1.2,
                color = "blue") +
         facet_wrap(~Terms)
-  
+
+# Animated version
+animated_twitter_plot <- twitter %>%
+    ggplot(aes(x = as.Date(date), y = rescaled)) +
+        geom_line(size = 1.2) +
+        labs(x = "Date",
+             y = "Count",
+             title = "Tweets on COVID-19 (in the US)",
+             subtitle = "Normalized to a 0-100 range") +
+        geom_vline(xintercept = as.Date(c("2020-03-16")),
+               linetype = "dashed",
+               size = 1.2,
+               color = "blue") +
+        facet_wrap(~Terms) +
+        transition_reveal(as.Date(date))
+
+# Animate
+animate(animated_twitter_plot, 
+        duration = 6, 
+        fps = 25, 
+        width = 600, 
+        height = 600, 
+        renderer = gifski_renderer())
+
+anim_save(here("outputs", "animated_twitter_plot.gif"))
+
 ```
 
 ```{r}
@@ -191,12 +263,12 @@ p2 <- stacked_area_plot(df, chinese) +
              title = "Chinese",
              subtitle = "Tweets created by the users located in the US")
 
-p3 <- stacked_area_plot(df, asian) +
-        labs(x = "Date",
-             y = "Proportion",
-             fill = "Asian",
-             title = "Asian",
-             subtitle = "Tweets created by the users located in the US")
+#p3 <- stacked_area_plot(df, asian) +
+ #       labs(x = "Date",
+  #           y = "Proportion",
+   #          fill = "Asian",
+    #         title = "Asian",
+     #        subtitle = "Tweets created by the users located in the US")
 
 p4 <- stacked_area_plot(df, chinese_virus) +
         labs(x = "Date",
@@ -219,15 +291,24 @@ p6 <- stacked_area_plot(df, wuhan_virus) +
              title = "Wuhan virus",
              subtitle = "Tweets created by the users located in the US")
 
-(p1 + p2 + p3) / (p4 + p5 + p6)
+p6 <- stacked_area_plot(df, anti_racism) +
+        labs(x = "Date",
+             y = "Proportion",
+             fill = "Wuhan virus",
+             title = "Wuhan virus",
+             subtitle = "Tweets created by the users located in the US")
+
+p7 <- stacked_area_plot(df, anti_racism) +
+        labs(x = "Date",
+             y = "Proportion",
+             fill = "Anti-racism",
+             title = "Anti-racism",
+             subtitle = "Tweets created by the users located in the US")
+
+(p1 + p2 + p4) / (p5 + p6 + p7)
 
 ggsave(here("outputs", "stacked_bar_plots2.png"),
        height = 10,
        width = 15)
        
-```
-# Export 
-
-```{r}
-fwrite(df, here("processed_data", "text_ready.csv"))
 ```
