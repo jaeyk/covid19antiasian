@@ -268,12 +268,12 @@ p2 <- stacked_area_plot(df, chinese) +
              title = "Chinese",
              subtitle = "Tweets created by the users located in the US")
 
-#p3 <- stacked_area_plot(df, asian) +
- #       labs(x = "Date",
-  #           y = "Proportion",
-   #          fill = "Asian",
-    #         title = "Asian",
-     #        subtitle = "Tweets created by the users located in the US")
+p3 <- stacked_area_plot(df, asian) +
+        labs(x = "Date",
+             y = "Proportion",
+             fill = "Asian",
+             title = "Asian",
+             subtitle = "Tweets created by the users located in the US")
 
 p4 <- stacked_area_plot(df, chinese_virus) +
         labs(x = "Date",
@@ -303,14 +303,8 @@ p6 <- stacked_area_plot(df, anti_racism) +
              title = "Wuhan virus",
              subtitle = "Tweets created by the users located in the US")
 
-p7 <- stacked_area_plot(df, anti_racism) +
-        labs(x = "Date",
-             y = "Proportion",
-             fill = "Anti-racism",
-             title = "Anti-racism",
-             subtitle = "Tweets created by the users located in the US")
 
-(p1 + p2 + p4) / (p5 + p6 + p7)
+(p1 + p2 + p3) / (p4 + p5 + p6)
 
 ggsave(here("outputs", "stacked_bar_plots2.png"),
        height = 10,
