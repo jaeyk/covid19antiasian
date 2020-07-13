@@ -13,25 +13,39 @@ I welcome any suggestions, comments, or questions. Feel free to create issues in
 
 ![](https://github.com/jaeyk/covid19antiasian/raw/master/outputs/animated_gtrends_plot.gif)
 
-Figure 1.
+Figure 1. Animated Google search trends.
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/animated_twitter_plot.gif)
 
-Figure 2.
+Figure 2. Animated Twitter trends.
 
-![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/overall_trend.gif)
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/overall_trend.png)
 
-Figure 3.
+Figure 3. Non-animated Google search and Twitter trends.
 
-![]
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/stacked_bar_plots2.png)
 
-Figure 4.
+Figure 4. Broader Twitter trends in stacked line plots.
 
 ## Topic modeling
 
+### Hashtags (keywords)
+
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hashtags.png)
+
+Figure 5. Hashtags of the Tweets mentioned Asian, Chinese, or Wuhan
+
 ### Base
 
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/topic_modeling_static.png)
+
+Figure 6. Base topic modeling analysis results
+
 ### Dynamic
+
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png)
+
+Figure 7. Dynamic topic modeling analysis results
 
 ## Conclusions
 
