@@ -90,6 +90,4 @@ Provided that the number of topics is three, the dynamic topic modeling shows th
 
 ## Conclusions
 
-In the Twitter sphere, anti-Asian public sentiment surged in January when COVID-19 began to spread in the United States. The pattern became stable. Trump's racially charged speeches made anti-Asian terms, such as the 'Chinese flu' and 'Kung flu' popular. Yet, it is also important to note that anti-Asian public sentiment was already present.
-
-Again, please feel free to email me, if you have suggestions, questions, and comments. I am especially interested in merging Twitter data with other data on the anti-Asian climate.
+In the Twitter sphere, anti-Asian public sentiment surged in January when COVID-19 began to spread in the United States. Afterward, the pattern became stable. Trump's racially charged speeches made anti-Asian terms, such as the 'Chinese flu' and 'Kung flu' popular. Yet, it is also important to note that anti-Asian public sentiment was already present before Trump pushed the xenophobic language for COVID-19.
