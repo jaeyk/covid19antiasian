@@ -299,7 +299,7 @@ df %>% ggplot() +
                 method = "loess", 
                 size = 1.5, 
                 span = 0.3) + # for given x, loess will use the 0.3 * N closet poitns to x to fit. source: https://rafalab.github.io/dsbook/smoothing.html
-    labs(title = "The time trend of Anti-Asian topic",
+    labs(title = "Topic trends over time",
          subtitle = "Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan",
          x = "Date", 
          y = "Topic proportion") +
