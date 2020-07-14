@@ -69,7 +69,7 @@ Figure 7. Base topic modeling analysis results
 
 ### Dynamic
 
-![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png)
+<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png" width = 500>
 
 Figure 8. Dynamic topic modeling analysis results
 
