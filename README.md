@@ -21,7 +21,7 @@ I welcome any suggestions, comments, or questions. Please feel free to create is
 
 ## Descriptive analysis [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/03_explore.Rmd)]
 
-![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/animated_twitter_plot.gif)
+<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/animated_twitter_plot.gif" width = 500>
 
 Figure 1. Animated Twitter trends.
 
