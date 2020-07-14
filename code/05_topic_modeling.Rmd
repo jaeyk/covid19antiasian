@@ -307,7 +307,9 @@ df %>% ggplot() +
     geom_vline(xintercept = as.Date(c("2020-03-16")),
                linetype = "dashed",
                size = 1.2,
-               color = "black")
+               color = "black") +
+    scale_y_continuous(labels =    
+    scales::percent_format(accuracy = 1)) 
 
 ggsave(here("outputs", "anti_asian_topic_dynamic_trend.png"))
 
