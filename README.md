@@ -43,7 +43,7 @@ The above keyword trend analysis is effective in examining how Trump's speech co
 
 ## Topic modeling [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd)]
 
-However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of tweets and I can identify these topics based on how words in different tweets hang together. Within identical topics, the most frequent words should be similar, Between different topics, the most frequent words should be different. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates these properties. Using the `stm` package in R, I found that, in this case, three would be the optimal number of topics. I simplified and functionalized Julia Silge's tidy text tutorial to accomplish this.
+However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of tweets and I can identify these topics based on how words in different tweets hang together. Within identical topics, the most frequent words should be similar, Between different topics, the most frequent words should be different. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates these properties. Using the `stm` package in R, I found that, in this case, three would be the optimal number of topics. I simplified and functionalized [Julia Silge's stm tutorial](https://juliasilge.com/blog/evaluating-stm/) to accomplish this.
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/k_search_diag.png" width = 500>
 
@@ -51,11 +51,13 @@ Figure 4. Model diagnostics by number of topics
 
 ### Hashtags (keywords)
 
+Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post-hoc theorizing. To avoid this problem, I used a topic modeling method called [keyword assisted topic models](https://arxiv.org/abs/2004.05964) recently developed by Shusei Eshima, Koshuke Imai, and Tomoya Sasaki. Their paper demonstrated how providing a small number of keywords can generate better classification performance and interpretable outcomes.
+
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hash_cloud.png)
 
-Figure 5. Hashtags of the Tweets mentioned Asian, Chinese, or Wuhan
+Figure 5. Hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan
 
-Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post hoc theorizing.
+Keyword assisted topic models method is especially applicable to Tweets as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R).
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/keyword.png" width = 500>
 
