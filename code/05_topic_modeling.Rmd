@@ -153,11 +153,14 @@ keyATM_docs <- read_rds(here("processed_data", "keyATM_docs.rds"))
 ## Create a dictionary of the key words 
 
 ```{r}
-# Keywords 
-keywords <- list("Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"),
-                 "Anti-racism" = c("antiracism", "stophate", "acttochange", "stopaapihate", "stophatecrimes", 
-                                   # Only these three worked 
-                                   "antiasian", "racism", "racist"))
+
+keywords <- list(
+    
+    "Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"),
+                 
+     "Anti-racism" = c("antiracism", "stophate", "acttochange", "stopaapihate", "stophatecrimes", "antiasian", "racism", "racist")
+    
+    )
 
 ```
 
@@ -201,7 +204,7 @@ conflicted::conflict_prefer("purrr", "map")
 
 k_search_diag <- visualize_diag(data_dfm, many_models)
 
-ggsave(here("outputs", "k_search_diag.png"), width = 4, height = 4)
+ggsave(here("outputs", "k_search_diag.png"), width = 4, height = 3)
 
 ```
 

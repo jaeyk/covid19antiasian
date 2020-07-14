@@ -51,13 +51,27 @@ Figure 4. Model diagnostics by number of topics
 
 ### Hashtags (keywords)
 
-Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post-hoc theorizing. To avoid this problem, I used a topic modeling method called [keyword assisted topic models](https://arxiv.org/abs/2004.05964) recently developed by Shusei Eshima, Koshuke Imai, and Tomoya Sasaki. Their paper demonstrated how providing a small number of keywords can generate better classification performance and interpretable outcomes.
+Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post-hoc theorizing. To avoid this problem, I used a topic modeling method called [keyword assisted topic models](https://arxiv.org/abs/2004.05964) recently developed by Shusei Eshima, Koshuke Imai, and Tomoya Sasaki. Their paper demonstrated how providing a small number of keywords can generate better classification performance and interpretable outcomes against the LDA benchmark.
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hash_cloud.png)
 
 Figure 5. Hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan
 
 Keyword assisted topic models method is especially applicable to Tweets as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R).
+
+```r
+keywords <- list(
+
+    "Anti-Asian" = c("wuhanvirus", "chinesevirus", "chinavirus", "wuhancoronavirus", "wuhanpneumonia", "ccpvirus", "chinaliedpeopledied"),
+
+     "Anti-racism" = c("antiasian", "racism", "racist")
+
+    )
+
+
+```
+
+Based on the hashtags, I created two list of words: **anti-Asian** (sentiment) and **anti-racism**. Figure 6 shows that how each of these keywords contributed to related topics.
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/keyword.png" width = 500>
 
@@ -69,11 +83,18 @@ Figure 6. Keyword contributions to topics
 
 Figure 7. Base topic modeling analysis results
 
+Provided that the number of topics is three, the base topic modeling shows that the proportions of anti-Asian and anti-racism topics are both slightly above 30%.
+
 ### Dynamic
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png" width = 500>
 
 Figure 8. Dynamic topic modeling analysis results
 
+Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then in both cases the topic proportion became stable.
 
 ## Conclusions
+
+In the Twitter sphere, anti-Asian public sentiment surged in January when COVID-19 began to spread in the United States. The pattern became stable. Trump's racially charged speeches made anti-Asian terms, such as Chinese flu and Kung flu popular. Yet, it is also important to note that anti-Asian public sentiment was already there. The close similarity between the Google and Twitter data shows that this phenomenon might be not limited to the Twitter users.
+
+Again, please feel free to send me suggestions, questions, and comments. I am especially interested in merging the Twitter data with other data on anti-Asian climate. 
