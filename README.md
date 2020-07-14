@@ -27,7 +27,7 @@ Figure 1. Animated Twitter trends.
 
 COVID-19 has many names. COVID-19 or Coronavirus are epidemiological terms. Chinese flu, Wuhan virus, and especially Kung flu are political charged terms. The latter terms have negative associations with Chinese/Asian communities and justify racial attacks against them. Figure 1 shows the trends of these terms, namely 'Chinese flu', 'Wuhan virus', and 'Kung flu', and anti-racism related terms, such as 'racist', 'racism', and 'anti-Asian' among the COVID-19 related Tweets created by the users located in the United States. The X-axis indicates when these Tweets were created and the Y-axis represents the count of the these Tweets normalized to a 0-100 range. The blue dashed line indicates the date when president Trump referred COVID-19 as 'Chinese virus'. Wuhan virus was already a popular term among the Twitter users as it was related to the origin of the virus. **Trump's remark on Chinese virus made 'Chinese flu' and 'Kung flu' trendy in the social media as the counts of them surged after Trump made the controversial speech.** Anti-racism related words became trendy at the outset of the COVID-19 outbreak (January-February 2020) and the period of the Black Lives Matter movement (May-June 2020).
 
-![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/overall_trend.png)
+<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/overall_trend.png" width = 500>
 
 Figure 2. Comparison between Google search and Twitter trends.
 
