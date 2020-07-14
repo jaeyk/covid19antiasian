@@ -201,7 +201,7 @@ conflicted::conflict_prefer("purrr", "map")
 
 k_search_diag <- visualize_diag(data_dfm, many_models)
 
-ggsave(here("outputs", "k_search_diag.png"))
+ggsave(here("outputs", "k_search_diag.png"), width = 4, height = 4)
 
 ```
 
