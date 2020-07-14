@@ -43,7 +43,7 @@ The above keyword trend analysis is effective in examining how Trump's speech co
 
 ## Topic modeling [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd)]
 
-However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these Tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of Tweets and I can identify these topics based on how words in different Tweets hang together. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates the relationship between the documents (in this case, Tweets). Using the `stm` package in R, I found that, in this case, three would be optimal (see [this figure](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R) for the model diagnostics).
+However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these Tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of Tweets and I can identify these topics based on how words in different Tweets hang together. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates the relationship between the documents (in this case, Tweets). Using the `stm` package in R, I found that, in this case, three would be optimal to balance between exclusivity and semantic coherence (see [this figure](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R) for the model diagnostics).
 
 ### Hashtags (keywords)
 
@@ -53,7 +53,7 @@ Topic modeling does not tell what estimated topics are about. To learn what thes
 
 Figure 4. Hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan
 
-keyATM is especially applicable to Tweets as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R).
+keyATM is especially applicable to Tweets as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R). (I will add more features to the app in the near future.)
 
 ```r
 keywords <- list(
@@ -67,11 +67,11 @@ keywords <- list(
 
 ```
 
-Based on the hashtags, I created two list of words: **anti-Asian** (sentiment) and **anti-racism**. Figure 6 shows that how each of these keywords contributed to related topics.
+Based on the hashtags, I created two list of words: **anti-Asian** (sentiment) and **anti-racism**. Figure 5 shows that the relative frequency of keywords in the corpus by topic. Keywords appeared fewer in documents are less meaningful.
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/keyword.png" width = 500>
 
-Figure 5. Keyword contributions to topics
+Figure 5. Topic word distribution
 
 ### Base
 
@@ -79,7 +79,7 @@ Figure 5. Keyword contributions to topics
 
 Figure 6. Base topic modeling analysis results
 
-Provided that the number of topics is three, the base topic modeling shows that the proportions of anti-Asian and anti-racism topics are both slightly above 30%.
+Provided that the number of topics is three, the base topic modeling shows that the proportions of anti-Asian and anti-racism topics are slightly above 30% and close to each other (respectively, 34% and 33%).
 
 ### Dynamic
 
@@ -87,7 +87,7 @@ Provided that the number of topics is three, the base topic modeling shows that 
 
 Figure 7. Dynamic topic modeling analysis results
 
-Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then in both cases the topic proportion became stable. For the dynamic topic modeling, you need to turn a date variable into a time index variable. I created a function, called [date2index](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R), which automatically makes that transition.
+Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then, in both cases, the topic proportions became stable between 30-40%. (Theta represents topic proportions for each document). For the dynamic topic modeling, you need to turn a date variable into a time index variable. I created a function, called [date2index](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R), which automatically makes that transition.
 
 ## Conclusions
 

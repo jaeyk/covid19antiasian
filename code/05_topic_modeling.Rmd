@@ -218,15 +218,25 @@ out <- keyATM(docs = keyATM_docs,       # text input
               no_keyword_topics = 1,    # number of topics without keywords
               keywords = keywords,      # keywords
               model = "base",           # select the model
-              options = list(seed = 250))
+              options = list(seed = 250,
+              store_theta = TRUE))
 
 write_rds(out, here("outputs", "keyATM_out.rds"))
 
 out <- read_rds(here("outputs", "keyATM_out.rds"))
 
-topic_out <- tibble(topic_counts = out$topic_counts,
+# theta = document-topic distribution 
+out$theta <- round(out$theta, 0)
+
+# sum 
+sums <- c(sum(out$theta[,1]), sum(out$theta[,2]), sum(out$theta[,3]))
+
+```
+
+```{r}
+topic_out <- tibble(topic_sums = sums,
                     names = c("Anti-Asian", "Anti-racism","Others")) %>%  
-           mutate(prop = topic_counts / sum(topic_counts),
+           mutate(prop = topic_sums / sum(topic_sums),
            prop = round(prop,2))
 
 topic_out %>% 
@@ -236,7 +246,7 @@ topic_out %>%
     scales::percent_format(accuracy = 1)) +
     labs(x = "Topic names", 
          y = "Topic proportions",          
-         title = "Topic distributions",
+         title = "Topic-document distributions",
           subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
 
 ggsave(here("outputs", "topic_modeling_static.png"), height = 5)
@@ -259,6 +269,9 @@ tictoc::toc()
 # Save 
 write_rds(dynamic_out_day, here("outputs", "dynamic_out_day.rds"))
 
+```
+
+```{r}
 dynamic_out_day <- read_rds(here("outputs", "dynamic_out_day.rds"))
 
 # Visualize 
@@ -274,6 +287,9 @@ df <- data.frame(date = fig_timetrend_day$values$time_index,
                 lower = fig_timetrend_day$values$Lower,
                 topic = fig_timetrend_day$values$Topic)
 
+```
+
+```{r}
 df %>% ggplot() +
     geom_line(aes(x = date, y = mean),
               alpha = 0.5, size = 1.2) +
@@ -286,7 +302,7 @@ df %>% ggplot() +
     labs(title = "The time trend of Anti-Asian topic",
          subtitle = "Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan",
          x = "Date", 
-         y = TeX(paste("Mean of", "$\\theta$", sep = " "))) +
+         y = "Topic proportion") +
     facet_wrap(~topic) +
     geom_vline(xintercept = as.Date(c("2020-03-16")),
                linetype = "dashed",
