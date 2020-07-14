@@ -15,8 +15,7 @@ visualize_diag <- function(sparse_matrix, many_models){
         ggplot(aes(K, Value, color = Metric)) +
         geom_line(size = 1.5, show.legend = FALSE) +
             labs(x = "K (number of topics)",
-                 y = NULL,
-                 title = "Model diagnostics by number of topics") +   
+                 y = NULL) +   
             facet_wrap(~Metric, scales = "free_y") +
             theme_pubr()
         
