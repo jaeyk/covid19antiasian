@@ -247,7 +247,7 @@ topic_out %>%
     labs(x = "Topic names", 
          y = "Topic proportions",          
          title = "Topic-document distributions",
-          subtitle = "Only used the Tweets mentioned either Asian, Chinese, or Wuhan related words") 
+          subtitle = "Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan related words") 
 
 ggsave(here("outputs", "topic_modeling_static.png"), height = 5)
     
