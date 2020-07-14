@@ -79,7 +79,7 @@ Figure 5. Topic word distribution
 
 Figure 6. Base topic modeling analysis results
 
-Provided that the number of topics is three, the base topic modeling shows that the proportions of anti-Asian and anti-racism topics are slightly above 30% and close to each other (respectively, 34% and 33%).
+Provided that the number of topics is three, the base topic modeling shows that the proportions of anti-Asian and anti-racism topics are slightly above 30% and close to each other (to be precise, respectively, 34% and 33%).
 
 ### Dynamic
 
@@ -87,7 +87,7 @@ Provided that the number of topics is three, the base topic modeling shows that 
 
 Figure 7. Dynamic topic modeling analysis results
 
-Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then, in both cases, the topic proportions became stable between 30-40%. For the dynamic topic modeling, you need to turn a date variable into a time index variable. I created a function, called [date2index](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R), which automatically makes that transition.
+Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then, the proportions of both topics became stable (30-40%). For the dynamic topic modeling, you need to turn a date variable into a time index variable. I created a function, called [date2index](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R), which automatically makes that transition.
 
 ## Conclusions
 
