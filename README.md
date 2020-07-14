@@ -75,7 +75,7 @@ Figure 5. Keyword contributions to topics
 
 ### Base
 
-<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/topic_modeling_static.png" width = 500>
+<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/topic_modeling_static.png" width = 600>
 
 Figure 6. Base topic modeling analysis results
 
@@ -83,7 +83,7 @@ Provided that the number of topics is three, the base topic modeling shows that 
 
 ### Dynamic
 
-<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png" width = 500>
+<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png" width = 600>
 
 Figure 7. Dynamic topic modeling analysis results
 
