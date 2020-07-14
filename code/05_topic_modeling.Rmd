@@ -124,7 +124,7 @@ data_dfm <- dfm(data_tokens) %>%
 ```{r}
 write_rds(data_dfm, here("processed_data", "data_dfm.rds"))
 
-# data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
+data_dfm <- read_rds(here("processed_data", "data_dfm.rds"))
 ```
 
 # KeyATM
@@ -178,8 +178,11 @@ key_viz
 ## Number of K
 
 ```{r}
+
+# future::plan(multiprocess)
+
 # Run many models 
-many_models <- tibble(K = c(2:5)) %>%
+many_models <- tibble(K = c(3:5)) %>%
                mutate(topic_model = furrr::future_map(K, ~stm(data_dfm, 
                                                        K = .,
                                                        verbose = TRUE)))
@@ -188,12 +191,16 @@ write_rds(many_models, here("outputs", "many_models.rds"))
 
 many_models <- read_rds(here("outputs", "many_models.rds"))
 
-# Resolve conflicts 
+```
 
+```{r}
+
+# Resolve conflicts 
 
 conflicted::conflict_prefer("purrr", "map")
 
 k_search_diag <- visualize_diag(data_dfm, many_models)
+
 ggsave(here("outputs", "k_search_diag.png"))
 
 ```

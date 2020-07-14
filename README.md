@@ -43,25 +43,31 @@ The above keyword trend analysis is effective in examining how Trump's speech co
 
 ## Topic modeling [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd)]
 
-However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', it is relatively clear that there is a racial tone. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many and latent themes exist within these Tweets and they need to be distinguished. To cluster these tweets, I employed a machine learning technique, called topic modeling. Simply put, the clusters of the tweets related to these different themes based on how words in different tweets hang together. Within identical topics, the words should be similar (**'semantic coherence'**), Between different topics, the words should be different (**'exclusion'**). Using the `stm` package in R, I assumed that three would be the optimal number of topics in this case.
+However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of tweets and I can identify these topics based on how words in different tweets hang together. Within identical topics, the most frequent words should be similar, Between different topics, the most frequent words should be different. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates these properties. Using the `stm` package in R, I found that, in this case, three would be the optimal number of topics.
+
+![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hash_cloud.png)
+
+Figure 5. Hashtags of the Tweets mentioned Asian, Chinese, or Wuhan
 
 ### Hashtags (keywords)
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hash_cloud.png)
 
-Figure 4. Hashtags of the Tweets mentioned Asian, Chinese, or Wuhan
+Figure 6. Hashtags of the Tweets mentioned Asian, Chinese, or Wuhan
+
+Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post hoc theorizing.
 
 ### Base
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/topic_modeling_static.png)
 
-Figure 5. Base topic modeling analysis results
+Figure 7. Base topic modeling analysis results
 
 ### Dynamic
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png)
 
-Figure 6. Dynamic topic modeling analysis results
+Figure 8. Dynamic topic modeling analysis results
 
 
 ## Conclusions
