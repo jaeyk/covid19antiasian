@@ -43,21 +43,17 @@ The above keyword trend analysis is effective in examining how Trump's speech co
 
 ## Topic modeling [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd)]
 
-However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of tweets and I can identify these topics based on how words in different tweets hang together. Within identical topics, the most frequent words should be similar, Between different topics, the most frequent words should be different. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates these properties. Using the `stm` package in R, I found that, in this case, three would be the optimal number of topics. I simplified and functionalized [Julia Silge's stm tutorial](https://juliasilge.com/blog/evaluating-stm/) to accomplish this.
-
-<img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/k_search_diag.png" width = 500>
-
-Figure 4. Model diagnostics by number of topics
+However, analyzing the Tweets related to Wuhan, Chinese, or Wuhan is challenging because in this case what key words imply is not obvious. If someone tweeted 'Chinese flu' or 'Kung flu', the political and racial context is relatively clear. However, if someone tweeted about 'COVID-19' and 'China', it could be about the country, the virus, anti-Asian sentiment, or something else. In other words, many latent themes exist within these Tweets. We need to distinguish these themes to make an inference about these Tweets. To do so, I employed a machine learning technique called topic modeling. Simply put, I assumed that these themes (or topics) are the clusters of Tweets and I can identify these topics based on how words in different Tweets hang together. An algorithm, such as Latent Dirichlet Allocation (LDA), estimates the relationship between the documents (in this case, Tweets). Using the `stm` package in R, I found that, in this case, three would be optimal (see [this figure](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R) for the model diagnostics).
 
 ### Hashtags (keywords)
 
-Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post-hoc theorizing. To avoid this problem, I used a topic modeling method called [keyword assisted topic models](https://arxiv.org/abs/2004.05964) recently developed by Shusei Eshima, Koshuke Imai, and Tomoya Sasaki. Their paper demonstrated how providing a small number of keywords can generate better classification performance and interpretable outcomes against the LDA benchmark.
+Topic modeling does not tell what estimated topics are about. To learn what these topics are, researchers should read some samples of these topics and make decisions. This aspect of topic modeling is time-consuming and, more fundamentally, could lead to post-hoc theorizing. To avoid this problem, I used a topic modeling method called [keyword assisted topic models (keyATM)](https://arxiv.org/abs/2004.05964) recently developed by Shusei Eshima, Koshuke Imai, and Tomoya Sasaki. Their paper demonstrated how providing a small number of keywords can generate better classification performance and interpretable outcomes against the LDA benchmark. The associated R package is available [here](https://keyatm.github.io/keyATM/).
 
 ![](https://github.com/jaeyk/covid19antiasian/blob/master/outputs/hash_cloud.png)
 
-Figure 5. Hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan
+Figure 4. Hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan
 
-Keyword assisted topic models method is especially applicable to Tweets as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R).
+keyATM is especially applicable to Tweets as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R).
 
 ```r
 keywords <- list(
@@ -75,13 +71,13 @@ Based on the hashtags, I created two list of words: **anti-Asian** (sentiment) a
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/keyword.png" width = 500>
 
-Figure 6. Keyword contributions to topics
+Figure 5. Keyword contributions to topics
 
 ### Base
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/topic_modeling_static.png" width = 500>
 
-Figure 7. Base topic modeling analysis results
+Figure 6. Base topic modeling analysis results
 
 Provided that the number of topics is three, the base topic modeling shows that the proportions of anti-Asian and anti-racism topics are both slightly above 30%.
 
@@ -89,12 +85,12 @@ Provided that the number of topics is three, the base topic modeling shows that 
 
 <img src = "https://github.com/jaeyk/covid19antiasian/blob/master/outputs/anti_asian_topic_dynamic_trend.png" width = 500>
 
-Figure 8. Dynamic topic modeling analysis results
+Figure 7. Dynamic topic modeling analysis results
 
-Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then in both cases the topic proportion became stable.
+Provided that the number of topics is three, the dynamic topic modeling shows that the proportions of both anti-Asian and anti-racism topics surged in January when COVID-19 began to spread in the United States. Then in both cases the topic proportion became stable. For the dynamic topic modeling, you need to turn a date variable into a time index variable. I created a function, called [date2index](https://github.com/jaeyk/covid19antiasian/blob/master/functions/date2index.R), which automatically makes that transition.
 
 ## Conclusions
 
-In the Twitter sphere, anti-Asian public sentiment surged in January when COVID-19 began to spread in the United States. The pattern became stable. Trump's racially charged speeches made anti-Asian terms, such as Chinese flu and Kung flu popular. Yet, it is also important to note that anti-Asian public sentiment was already there. The close similarity between the Google and Twitter data shows that this phenomenon might be not limited to the Twitter users.
+In the Twitter sphere, anti-Asian public sentiment surged in January when COVID-19 began to spread in the United States. The pattern became stable. Trump's racially charged speeches made anti-Asian terms, such as Chinese flu and Kung flu popular. Yet, it is also important to note that anti-Asian public sentiment was already there.
 
-Again, please feel free to send me suggestions, questions, and comments. I am especially interested in merging the Twitter data with other data on anti-Asian climate. 
+Again, please feel free to send me suggestions, questions, and comments. I am especially interested in merging the Twitter data with other data on anti-Asian climate.
