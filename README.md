@@ -1,5 +1,5 @@
 
-# Twitter Analysis on COVID-19 and Anti-Asian Climate
+# Large-scale Twitter Analysis on COVID-19 and Anti-Asian Climate
 
 This analysis traces how COVID-19 has shaped an anti-Asian climate on Twitter, drawing on more than 1 million US-located tweets. The other part of the project is based on multi-racial survey data. This is a joint work with Nathan Chan (UCI) and [Vivien Leung](https://sites.google.com/view/vivienleung/home) (UCLA). The paper version will be presented at the 2020 American Political Science Association annual meeting.
 
