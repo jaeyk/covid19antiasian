@@ -58,6 +58,8 @@ small_df <- df %>% filter(chinese == 1 | wuhan == 1 | asian == 1)
 
 small_df <- small_df[-c(2930, 25557, 33569, 49217, 49784, 51572, 71270, 89453, 90285, 102360, 108111, 110351, 113704, 116119, 120643, 121220, 122300, 122695, 125647, 133053),]
 
+# Add intervention variable 
+small_df$intervention <- ifelse(small_df$date >= "2020-03-16", 1, 0)
 ```
 
 # Preprocess 
@@ -77,6 +79,9 @@ docvars(my_corpus,
 
 docvars(my_corpus, 
 "trump") <- small_df$trump %>% as.factor()
+
+docvars(my_corpus, 
+"intervention") <- small_df$intervention %>% as.factor()
 
 # Date 
 
@@ -251,6 +256,58 @@ topic_out %>%
 
 ggsave(here("outputs", "topic_modeling_static.png"), height = 5)
     
+```
+
+## Covariate topic modeling 
+
+```{r}
+
+# Extract covariates 
+vars <- docvars(my_corpus)
+
+vars_selected <- vars %>% select(intervention) %>%
+    mutate(intervention = ifelse(intervention == 1, "Post-Trump speech", "Pre-Trump speech"))
+
+# Topic modeling 
+covariate_out <- keyATM(docs = keyATM_docs,       # text input
+              no_keyword_topics = 1,    # number of topics without keywords
+              keywords = keywords,      # keywords
+              model = "covariate",           # select the model
+              model_settings = list(covariates_data = vars_selected,
+                                    covariates_formula = ~ intervention),
+              options = list(seed = 250,
+              store_theta = TRUE))
+
+```
+
+```{r}
+# Predicted mean of the document-term distribution for intervention 
+strata_topic <- by_strata_DocTopic(out, by_var = "intervention",
+                                   labels = c("Post-Trump speech", "Pre-Trump speech"))
+
+est <- summary(strata_topic)
+
+# Baseline 
+new_data <- covariates_get(covariate_out)
+
+new_data[, "intervention"] <- 0 
+
+pred <- predict(covariate_out, new_data, label = "Others")
+
+# Bind them together 
+res <- bind_rows(est, pred)
+
+labels <- unique(res$label)
+
+ggplot(res, aes(x = label, ymin = Lower, ymax = Upper, group = Topic)) +
+  geom_errorbar(width = 0.1) +
+  coord_flip() +
+  facet_wrap(~Topic) +
+  geom_point(aes(x = label, y = Point)) +
+  scale_x_discrete(limits = rev(labels)) +
+  xlab("Intervention") +
+  scale_y_continuous(labels =    
+  scales::percent_format(accuracy = 1)) 
 ```
 
 ## Dynamic topic modeling 
