@@ -209,7 +209,7 @@ conflicted::conflict_prefer("purrr", "map")
 
 k_search_diag <- visualize_diag(data_dfm, many_models)
 
-ggsave(here("outputs", "k_search_diag.png"), width = 4, height = 3)
+ggsave(here("outputs", "k_search_diag.png"))
 
 ```
 
@@ -249,12 +249,12 @@ topic_out %>%
     geom_col(position = "dodge") +
     scale_y_continuous(labels =    
     scales::percent_format(accuracy = 1)) +
-    labs(x = "Topic names", 
-         y = "Topic proportions",          
+    labs(x = "Topic name", 
+         y = "Topic proportion",          
          title = "Topic-document distributions",
           subtitle = "Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan related words") 
 
-ggsave(here("outputs", "topic_modeling_static.png"), height = 5)
+ggsave(here("outputs", "topic_modeling_static.png"))
     
 ```
 

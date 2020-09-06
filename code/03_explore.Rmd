@@ -246,11 +246,10 @@ p6 <- stacked_area_plot(df, wuhan_virus) +
              title = "Wuhan virus",
              subtitle = "Tweets created by the users located in the US")
 
-(p1 + p2 + p3) / (p4 + p5 + p6)
+(p1 + p2) / (p3 + p4) / (p5 + p6)
 
 ggsave(here("outputs", "stacked_bar_plots2.png"),
-       height = 10,
-       width = 15)
+       height = 10, width = 9)
        
 ```
 # Export 
