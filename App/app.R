@@ -1,12 +1,10 @@
 
 # load package 
-pacman::p_load(
-    tidyverse, # tidyverse 
-    wordcloud2, # Interactive wordcloud
-    shiny, # for Shiny
-    shinydashboard, # for Shiny dashboard
-    colourpicker, # for better visual 
-    here) # for reproducibility 
+
+require("wordcloud2")
+require("shiny")
+require("shinydashboard")
+require("colourpicker")
 
 # load data 
 
@@ -39,5 +37,3 @@ server <- function(input, output) {
   }
 
 shinyApp(ui = ui, server = server)
-
-runGist(e859632d10d73b9d53a83a59ad0a7acb)
