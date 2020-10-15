@@ -55,7 +55,7 @@ Topic modeling does not tell what estimated topics are about. To learn what thes
 
 Figure 4. Hashtags of the Tweets mentioned COVID-19 and either Asian, Chinese, or Wuhan
 
-keyATM is especially applicable to tweets, as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the tweets that mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The basic Shiny app version is available [here](https://github.com/jaeyk/covid19antiasian/blob/master/code/app.R). (I will add more features to the app in the near future.)
+keyATM is especially applicable to tweets, as Twitter hashtags are literally keywords. In addition, the above keyword trend analyses demonstrated the conceptual validity of these measures. I extracted hashtags of the tweets that mentioned COVID-19 and either Asian, Chinese, or Wuhan and visualized them using a word cloud in Figure 5. I also created an [interactive version of the word cloud](https://rpubs.com/jaeyeonkim/hashcloud) for further exploration. If you hover a cursor over a hashtag, you can find how many times that particular hashtag was mentioned in the corpus. The Shiny app version is available [here](https://jaeyeonkim.shinyapps.io/covid19antiasian_hashcloud/). 
 
 ```r
 keywords <- list(
