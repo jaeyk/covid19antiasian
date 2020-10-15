@@ -5,13 +5,14 @@ pacman::p_load(
     wordcloud2, # Interactive wordcloud
     shiny, # for Shiny
     shinydashboard, # for Shiny dashboard
-    colourpicker) # for better visual 
+    colourpicker, # for better visual 
+    here) # for reproducibility 
 
 # load data 
 
-df <- read.csv(here("processed_data", "hash_counts.csv"))[,-1]
+df <- read.csv(url("https://github.com/jaeyk/covid19antiasian/raw/master/processed_data/hash_counts.csv"))[,-1]
 
-body <- fluidPage(
+ui <- fluidPage(
   
     h1("Word Cloud on the Hashtags of the Tweets related to COVID-19 & Asian|Chinese|Wuhan"),
   
@@ -38,3 +39,5 @@ server <- function(input, output) {
   }
 
 shinyApp(ui = ui, server = server)
+
+runGist(e859632d10d73b9d53a83a59ad0a7acb)

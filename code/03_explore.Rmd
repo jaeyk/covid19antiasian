@@ -250,7 +250,14 @@ p6 <- stacked_area_plot(df, wuhan_virus) +
 
 ggsave(here("outputs", "stacked_bar_plots2.png"),
        height = 10, width = 9)
-       
+      
+df$virus <- ifelse(df$wuhan_virus == 1 | df$chinese_virus == 1 | df$kung_flu == 1, 1, 0)
+
+sum(df$virus)/nrow(df)
+
+df$asia <- ifelse(df$asian == 1 | df$chinese == 1 | df$wuhan == 1, 1, 0)
+
+(sum(df$asia)/nrow(df))/(sum(df$virus)/nrow(df))
 ```
 # Export 
 

@@ -18,7 +18,9 @@ US_tweets$hashtags <- str_extract(US_tweets$full_text, "#\\S+")
 # Remove too common hashtags (I defined them as stop_hashs)
 US_tweets$stop_hashs <- str_detect(US_tweets$hashtags, "covid|corona")
 
-US_tweets <- US_tweets %>% filter(stop_hashs == 0) %>% filter(wuhan == 1 | asian == 1 | chinese == 1)
+US_tweets <- US_tweets %>% 
+    filter(stop_hashs == 0) %>% 
+    filter(wuhan == 1 | asian == 1 | chinese == 1)
                                   
 # Count 
 hash_counts <- US_tweets %>%
