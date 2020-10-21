@@ -5,6 +5,6 @@ account: jaeyeonkim
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3025877
-bundleId: 3746503
+bundleId: 3768360
 url: https://jaeyeonkim.shinyapps.io/covid19antiasian_hashcloud/
-when: 1602793754.7315
+when: 1603322007.98313
