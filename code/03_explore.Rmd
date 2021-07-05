@@ -149,7 +149,9 @@ gtrends_plot <- gtrends %>%
                size = 1.2,
                color = "blue") +
         facet_wrap(~Terms)
+```
 
+```{r}
 animated_gtrends_plot <- gtrends %>%
     ggplot(aes(x = as.Date(date), y = hits)) +
         geom_line(size = 1.2) +
@@ -179,7 +181,7 @@ twitter <- bind_rows(
     mutate(add_normalized(df, chinese_virus), Terms = "Chinese virus"),
     mutate(add_normalized(df, kung_flu), Terms = "Kung flu"),
     mutate(add_normalized(df, wuhan_virus), Terms = "Wuhan virus"),
-    mutate(add_normalized(df, anti_racism), Terms = "Anit-racism")
+    mutate(add_normalized(df, anti_racism), Terms = "Anti-racism")
 )
              
 twitter_plot <- twitter %>%
