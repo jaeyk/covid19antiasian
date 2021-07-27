@@ -1,13 +1,13 @@
 
 # Large-scale Twitter Analysis on COVID-19 and Anti-Asian Climate
 
-The preprint version of this project is available at https://osf.io/preprints/socarxiv/dvm7r/ (invited to be revised and resubmitted at *Perspectives on Politics*)
+The preprint version of this project is available at https://osf.io/preprints/socarxiv/dvm7r/ (conditionaly accepted at *Perspectives on Politics*)
 
 This analysis traces how COVID-19 has shaped an anti-Asian climate on Twitter, drawing on more than 1 million US-located tweets. The other part of the project is based on multi-racial survey data. This is a joint work with [Nathan Chan](https://scholar.google.com/citations?user=3NKNlWwAAAAJ&hl=en) (UCI) and [Vivien Leung](https://sites.google.com/view/vivienleung/home) (UCLA). The paper version will be presented at the 2020 American Political Science Association annual meeting.
 
 The objective of this article is to document the data collection, analysis, and visualization process for my future self, co-authors, and other researchers. In the research process, I also developed an R package called [tidytweetjson](https://github.com/jaeyk/tidytweetjson), which could be useful to social scientists interested in using social media data for their own research. The entire research process is computationally reproducible. All the code used in the analysis is available in this Git repository. I automated parts that could be automatable by writing functions and putting some of these functions as a package.
 
-I welcome any suggestions, comments, or questions. Please feel free to create issues in this Git repository or send an email to [jaeyeonkim@berkeley.edu](mailto:jaeyeonkim@berkeley.edu).
+I welcome any suggestions, comments, or questions. Please feel free to create issues in this Git repository or send an email to [jkim638@jhu.edu](mailto:jkim638@jhu.edu).
 
 ## Key questions
 
@@ -23,7 +23,6 @@ I welcome any suggestions, comments, or questions. Please feel free to create is
     - To ease the process, I randomly selected 10% of the Tweet IDs from the original dataset (N = 5,719,216), stratifying by the months in which the tweets were created. Even this sample dataset is larger than 5 gigabytes. I created an R package, called [tidytweetjson](https://github.com/jaeyk/tidytweetjson), that efficiently parses this large JSON file into a tidyverse-ready dataframe. The package also helps to turn the timestamp variable in the tweet JSON file into a date variable and identifies whether the location indicated by Twitter users is in the United States or not. I also saved the IDs of the tweets by typing the following command in the terminal: `grep "INFO archived" twarc.log | awk '{print $5}' > tweet_ids` 
    
     - Using the R package, I identified and selected 1,394,468 tweets (37% of the sample dataset) created by the users located in the United States. This data is used for further analysis.
-
 
 ## Descriptive analysis [[R Markdown](https://github.com/jaeyk/covid19antiasian/blob/master/code/03_explore.Rmd)]
 
