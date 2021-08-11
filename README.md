@@ -24,26 +24,26 @@ The data source is [the large-scale COVID-19 Twitter chatter dataset (v.15)](htt
 
 **Replication code**
 
-* 00_setup.sh: Shell script for collecting Tweets and their related metadata based on Tweet IDs
+* [00_setup.sh](https://github.com/jaeyk/covid19antiasian/blob/master/code/00_setup.sh): Shell script for collecting Tweets and their related metadata based on Tweet IDs
 
-* 01_google_trends.r: R script for collecting Google search API data
+* [01_google_trends.r](https://github.com/jaeyk/covid19antiasian/blob/master/code/01_google_trends.R): R script for collecting Google search API data
 
-* 01_sample.Rmd: R markdown file for sampling Twitter data
+* [01_sample.Rmd](https://github.com/jaeyk/covid19antiasian/blob/master/code/01_sample.Rmd): R markdown file for sampling Twitter data
 
-* 02_parse.r: R script for parsing Twitter data. This script produced a cleaned and wrangled data named 'parsed.rds.' This file is not included in this repository to not violate Twitter's Developer Terms. Also, its file size is quite large (**1.4 GB**).
+* [02_parse.r](https://github.com/jaeyk/covid19antiasian/blob/master/code/02_parse.r): R script for parsing Twitter data. This script produced a cleaned and wrangled data named 'parsed.rds.' This file is not included in this repository to not violate Twitter's Developer Terms. Also, its file size is quite large (**1.4 GB**).
 
 ## Descriptive analysis
 
 **Replication code**
 
-* 03_explore.Rmd: R markdown file for further wrangling and exploring data. This file creates **Figure 2.** (overall_trend.png)
+* [03_explore.Rmd](https://github.com/jaeyk/covid19antiasian/blob/master/code/03_explore.Rmd): R markdown file for further wrangling and exploring data. This file creates **Figure 2.** (overall_trend.png)
 
-* 04_01_hashtags.R: R script file for creating a wordlcoud of hashtags. This file creates **Figure 1.** (hash_cloud.png)
+* [04_01_hashtags.R](https://github.com/jaeyk/covid19antiasian/blob/master/code/04_01_hashtags.R): R script file for creating a wordlcoud of hashtags. This file creates **Figure 1.** (hash_cloud.png)
 
-* 04_clean.ipynb: Python notebook for cleaning texts
+* [04_clean.ipynb](https://github.com/jaeyk/covid19antiasian/blob/master/code/04_clean.ipynb): Python notebook for cleaning texts
 
 ## Topic modeling
 
 **Replication code**
 
-* 05_topic_modeling.Rmd: R markdown for topic modeling analysis. This file creates **Figure 3** (dynamic_topic_day.png)
+* [05_topic_modeling.Rmd](https://github.com/jaeyk/covid19antiasian/blob/master/code/05_topic_modeling.Rmd): R markdown for topic modeling analysis. This file creates **Figure 3** (dynamic_topic_day.png)
