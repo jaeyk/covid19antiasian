@@ -29,9 +29,9 @@ The data source is [the large-scale COVID-19 Twitter chatter dataset (v.15)](htt
 
 * 01_google_trends.r (R script): R script for collecting Google search API data
 
-* 01_sample.Rmd (R markdown file): R makrdown file for sampling Twitter data
+* 01_sample.Rmd (R markdown file): R markdown file for sampling Twitter data
 
-* 02_parse.r (R script): R script for parsing Twitter data. This script produced a cleaned and wrangled data named 'parsed.rds.' This file is not included in this repo to not violate Twitter's Developer Terms. Also, its file size is quite large (**1.4 GB**).
+* 02_parse.r (R script): R script for parsing Twitter data. This script produced a cleaned and wrangled data named 'parsed.rds.' This file is not included in this repository to not violate Twitter's Developer Terms. Also, its file size is quite large (**1.4 GB**).
 
 ## Descriptive analysis
 
