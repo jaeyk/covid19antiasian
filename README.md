@@ -16,7 +16,7 @@ Author: Jae Yeon Kim (jkim638@jhu.edu)
 * Platform: x86_64-pc-linux-gnu (64-bit)
 * Running under: Ubuntu 21.04
 
-## Data collection [[Shell script](https://github.com/jaeyk/covid19antiasian/blob/master/code/00_setup.sh)] [[R package](https://github.com/jaeyk/tidytweetjson)]
+## Data collection 
 
 **Raw data: tweet_ids**
 
