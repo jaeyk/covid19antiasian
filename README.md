@@ -7,9 +7,9 @@ Author: Jae Yeon Kim (jkim638@jhu.edu)
 
 1. Programming languages
 
-R version 4.0.4 (2021-02-15)
-Python 3.8.8
-Bash 5.1.4(1)-release
+* R version 4.0.4 (2021-02-15)
+* Python 3.8.8
+* Bash 5.1.4(1)-release
 
 2. Operation system
 
