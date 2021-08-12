@@ -3,6 +3,8 @@
 
 Author: Jae Yeon Kim (jkim638@jhu.edu)
 
+Paper: https://osf.io/preprints/socarxiv/dvm7r/ (accepted at *Perspectives on Politics*)
+
 **Session information**
 
 1. Programming languages
